@@ -285,7 +285,7 @@ body.has-wallpaper::after{
   transition:transform .22s cubic-bezier(.34,1.56,.64,1);
   transform-origin:bottom center;
 }
-.dock-item:hover{transform:scale(1.32) translateY(-10px);}
+
 .dock-icon{
   width:50px;height:50px;border-radius:13px;
   background:rgba(80,29,14,.92);
@@ -972,14 +972,43 @@ fetch(API_BASE+'/api/agents')
   });
 (function(){
   var mount=document.getElementById('face-mount-bg');
-  document.addEventListener('mousemove',function(e){
-    var r=mount.getBoundingClientRect();
+  function lookAtEl(handle, el, e){
+    if(!handle || !el) return;
+    var r=el.getBoundingClientRect();
     var cx=r.left+r.width/2, cy=r.top+r.height/2;
     var dx=(e.clientX-cx)/320;
     var dy=(e.clientY-cy)/240;
     dx=Math.max(-1,Math.min(1,dx)); dy=Math.max(-1,Math.min(1,dy));
-    jarvisFaceHandle.lookAt(dx,dy);
+    handle.lookAt(dx,dy);
+  }
+  document.addEventListener('mousemove',function(e){
+    lookAtEl(jarvisFaceHandle, mount, e);
+    lookAtEl(satFaceHandles.satA, document.getElementById('sat-a-mount'), e);
+    lookAtEl(satFaceHandles.satB, document.getElementById('sat-b-mount'), e);
   });
+})();
+
+/* Dock magnification (macOS-style): icons scale based on horizontal proximity
+   to the cursor, not just the single hovered icon. */
+(function dockMagnify(){
+  var dock=document.getElementById('dock');
+  if(!dock) return;
+  var maxScale=1.55, sigma=54;
+  function apply(mouseX){
+    var items=dock.querySelectorAll('.dock-item');
+    items.forEach(function(item){
+      var r=item.getBoundingClientRect();
+      var cx=r.left+r.width/2;
+      var dist=mouseX-cx;
+      var scale=1+(maxScale-1)*Math.exp(-(dist*dist)/(2*sigma*sigma));
+      item.style.transform='scale('+scale.toFixed(3)+') translateY('+(-(scale-1)*22).toFixed(1)+'px)';
+    });
+  }
+  function reset(){
+    dock.querySelectorAll('.dock-item').forEach(function(item){ item.style.transform=''; });
+  }
+  dock.addEventListener('mousemove',function(e){ apply(e.clientX); });
+  dock.addEventListener('mouseleave',reset);
 })();
 function spotlightAsk(question){
   question=(question||'').trim();
