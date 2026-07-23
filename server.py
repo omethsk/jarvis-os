@@ -72,6 +72,8 @@ EMOTION_PROMPT = (
 WEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')
 WEATHER_CITY = os.environ.get('WEATHER_CITY', 'London')
 CALENDAR_ICAL_URL = os.environ.get('CALENDAR_ICAL_URL', '')
+ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
+ELEVENLABS_VOICE_ID = os.environ.get('ELEVENLABS_VOICE_ID', '')
 
 # ── Serve HTML assets ────────────────────────────────────────────────
 @app.route('/')
@@ -745,6 +747,37 @@ def fetch_calendar_events(limit=10):
 @app.route('/calendar')
 def calendar():
     return jsonify(fetch_calendar_events())
+
+# --- Text-to-speech ---
+@app.route('/tts', methods=['POST'])
+def tts():
+    data = get_json_body()
+    text = str(data.get('text') or '').strip()
+    if not text:
+        return jsonify({'error': 'no text provided'}), 400
+    if not ELEVENLABS_API_KEY or not ELEVENLABS_VOICE_ID:
+        return jsonify({'error': 'TTS not configured'}), 500
+    text = text[:2000]
+    try:
+        r = requests.post(
+            f'https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}',
+            headers={
+                'xi-api-key': ELEVENLABS_API_KEY,
+                'Content-Type': 'application/json',
+                'Accept': 'audio/mpeg',
+            },
+            json={
+                'text': text,
+                'model_id': 'eleven_turbo_v2_5',
+                'voice_settings': {'stability': 0.5, 'similarity_boost': 0.75},
+            },
+            timeout=20,
+        )
+        if r.status_code != 200:
+            return jsonify({'error': f'elevenlabs error {r.status_code}: {r.text[:200]}'}), 502
+        return Response(r.content, mimetype='audio/mpeg')
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 502
 
 # ── Proxy /api/* → Flask endpoints ───────────────────────────────────
 @app.route('/api/weather')

@@ -175,6 +175,24 @@ function addMessage(role,text,cls,thinking){
   return div;
 }
 
+function speak(text){
+  fetch(API_BASE+'/tts',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text:text})
+  }).then(function(r){
+    if(!r.ok) throw new Error('tts failed');
+    return r.blob();
+  }).then(function(blob){
+    var url=URL.createObjectURL(blob);
+    var audio=new Audio(url);
+    face.setState('speaking');
+    audio.onended=function(){ face.setState('idle'); URL.revokeObjectURL(url); };
+    audio.onerror=function(){ face.setState('idle'); URL.revokeObjectURL(url); };
+    audio.play().catch(function(){ face.setState('idle'); });
+  }).catch(function(){ face.setState('idle'); });
+}
+
 function sendAsk(){
   var q=input.value.trim();
   if(!q||busy) return;
@@ -196,9 +214,9 @@ function sendAsk(){
     pending.className='msg msg-jarvis';
     pending.querySelector('.msg-body').textContent=answer;
     chat.scrollTop=chat.scrollHeight;
-    face.setState('idle');
     face.setEmotion(data.emotion||'calm');
     setTimeout(function(){ face.setEmotion('calm'); },8000);
+    speak(answer);
   }).catch(function(){
     pending.className='msg msg-jarvis error';
     pending.querySelector('.msg-body').textContent='Something went wrong — try again.';

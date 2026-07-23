@@ -183,6 +183,9 @@
     '.jarvis-face[data-state="listening"] .jf-coreL,' +
     '.jarvis-face[data-state="listening"] .jf-coreR{animation-duration:1s;}' +
     '.jarvis-face[data-state="thinking"] .jf-ambient{animation:jf-thinking-pulse 1s ease-in-out infinite;}' +
+    '.jarvis-face[data-state="speaking"] .jf-coreL,' +
+    '.jarvis-face[data-state="speaking"] .jf-coreR{animation-duration:.5s;}' +
+    '.jarvis-face[data-state="speaking"] .jf-ambient{animation:jf-thinking-pulse .5s ease-in-out infinite;}' +
     '@keyframes jf-thinking-pulse{0%,100%{opacity:.4;}50%{opacity:.9;}}' +
     '.jarvis-face[data-agent="friday"] .jf-eyeL,.jarvis-face[data-agent="friday"] .jf-eyeR{animation-duration:4.5s;}' +
     '.jarvis-face[data-agent="friday"] .jf-coreL,.jarvis-face[data-agent="friday"] .jf-coreL-halo,' +
