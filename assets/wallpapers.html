@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ULTRON WALLPAPERS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;
+  font-family:system-ui,-apple-system,sans-serif;}
+body{background:
+    radial-gradient(circle at 12% 18%, rgba(255,60,0,.30), transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(255,60,0,.26), transparent 45%),
+    radial-gradient(circle at 50% 95%, rgba(255,60,0,.16), transparent 50%),
+    linear-gradient(165deg,#1a0803 0%,#280f07 50%,#0f0502 100%);}
+::selection{background:rgba(255,60,0,.35);}
+
+#topbar{position:fixed;top:0;left:0;right:0;height:28px;z-index:200;
+  background:rgba(26,8,3,.72);
+  border-bottom:1px solid rgba(255,60,0,.12);
+  display:flex;align-items:center;padding:0 10px;gap:0;font-size:12px;
+  color:rgba(255,221,210,.88);user-select:none;-webkit-user-select:none;}
+#tb-logo{font-size:14px;margin-right:10px;
+  background:linear-gradient(90deg,#ff3c00,#ff3c00);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#tb-name{font-weight:800;letter-spacing:1.5px;margin-right:16px;
+  background:linear-gradient(90deg,#ff8a66,#ff3c00 55%,#ff3c00);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+#btn-home{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:3px 11px;font-size:10px;letter-spacing:.8px;
+  color:rgba(255,205,190,.8);cursor:pointer;transition:background .15s;}
+#btn-home:hover{background:rgba(255,255,255,.12);}
+
+#ribbon{position:fixed;top:28px;left:0;right:0;height:40px;z-index:190;
+  background:rgba(26,8,3,.72);
+  border-bottom:1px solid rgba(255,60,0,.1);
+  display:flex;align-items:center;padding:0 10px;gap:8px;}
+.tab-btn{height:26px;padding:0 14px;border-radius:6px;border:1px solid rgba(255,60,0,.14);
+  background:rgba(255,60,0,.05);color:rgba(240,179,160,.75);font-size:10.5px;letter-spacing:.6px;
+  cursor:pointer;font-weight:700;transition:background .15s,color .15s;}
+.tab-btn.active{background:rgba(255,60,0,.2);color:rgba(255,60,0,.95);border-color:rgba(255,60,0,.5);}
+.tab-btn:hover{background:rgba(255,60,0,.14);}
+.rgap{flex:1;}
+.rsel,.rinp{height:26px;background:rgba(255,60,0,.06);border:1px solid rgba(255,60,0,.12);
+  color:rgba(255,205,190,.85);border-radius:6px;padding:0 8px;font-size:11px;cursor:pointer;outline:none;}
+.rinp{cursor:text;width:200px;}
+.rsel:hover,.rinp:focus{border-color:rgba(255,60,0,.5);}
+
+#main{position:fixed;top:68px;left:0;right:0;bottom:0;overflow-y:auto;padding:20px;}
+.view{display:none;}
+.view.active{display:block;}
+
+/* ── Hero ── */
+#hero{max-width:1200px;margin:0 auto 26px;border-radius:18px;overflow:hidden;position:relative;
+  height:280px;background:rgba(255,60,0,.05);border:1px solid rgba(255,60,0,.14);display:none;}
+#hero.has-img{display:block;}
+#hero img{width:100%;height:100%;object-fit:cover;display:block;}
+#hero-overlay{position:absolute;left:0;right:0;bottom:0;padding:22px 26px;
+  background:linear-gradient(0deg,rgba(17,6,2,.92) 0%,rgba(17,6,2,.55) 55%,transparent 100%);}
+#hero-label{font-size:9.5px;letter-spacing:2px;color:rgba(255,60,0,.85);font-weight:700;margin-bottom:6px;}
+#hero-title{font-size:24px;font-weight:800;color:rgba(255,236,230,.97);margin-bottom:6px;}
+#hero-meta{font-size:11px;color:rgba(245,203,190,.7);margin-bottom:14px;}
+#hero-btn{padding:8px 20px;border-radius:10px;border:none;background:linear-gradient(120deg,#ff3c00,#ff3c00);
+  color:#1f0902;font-size:11.5px;font-weight:700;cursor:pointer;}
+#hero-btn:hover{box-shadow:0 4px 18px rgba(255,60,0,.4);}
+
+/* ── Category tiles ── */
+#cat-grid{max-width:1200px;margin:0 auto;display:grid;
+  grid-template-columns:repeat(3,1fr);gap:16px;}
+.ctile{position:relative;height:200px;border-radius:16px;overflow:hidden;cursor:pointer;
+  background:rgba(255,60,0,.05);border:1px solid rgba(255,60,0,.12);
+  transition:transform .18s,border-color .18s;}
+.ctile:hover{transform:translateY(-3px);border-color:rgba(255,60,0,.5);}
+.ctile img{width:100%;height:100%;object-fit:cover;display:block;}
+.ctile-label{position:absolute;left:0;right:0;bottom:0;padding:16px;
+  background:linear-gradient(0deg,rgba(17,6,2,.88),transparent 70%);
+  font-size:18px;font-weight:800;color:rgba(255,240,235,.97);}
+
+#grid{max-width:1200px;margin:0 auto;display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.wcard{background:rgba(38,13,6,.55);
+  border:1px solid rgba(255,60,0,.12);border-radius:12px;overflow:hidden;cursor:pointer;
+  transition:transform .18s,border-color .18s;}
+.wcard:hover{transform:translateY(-3px);border-color:rgba(255,60,0,.5);}
+.wcard img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:rgba(0,0,0,.3);}
+.wcard-info{padding:8px 10px;display:flex;justify-content:space-between;align-items:center;}
+.wcard-res{font-size:9.5px;color:rgba(240,179,160,.6);}
+.wcard-btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,60,0,.3);
+  background:rgba(255,60,0,.1);color:rgba(255,182,160,.9);font-size:9px;font-weight:700;cursor:pointer;}
+.wcard-btn:hover{background:rgba(255,60,0,.25);}
+#empty-msg{max-width:500px;margin:60px auto;text-align:center;color:rgba(235,177,160,.5);font-size:12.5px;}
+
+#pagination{max-width:1200px;margin:18px auto 0;display:flex;gap:6px;justify-content:center;}
+.pg{min-width:26px;height:26px;padding:0 6px;border-radius:6px;border:1px solid rgba(255,60,0,.12);
+  background:rgba(255,60,0,.05);color:rgba(255,205,190,.75);font-size:11px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.pg:hover{background:rgba(255,60,0,.16);}
+.pg.active{background:rgba(255,60,0,.25);color:rgba(255,60,0,.95);border-color:rgba(255,60,0,.5);}
+
+#modal{position:fixed;inset:0;z-index:500;background:rgba(14,5,2,.92);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+#modal.open{display:flex;}
+#modal img{max-width:80vw;max-height:70vh;border-radius:12px;border:1px solid rgba(255,60,0,.25);}
+#modal-actions{display:flex;gap:10px;}
+#modal-set{padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(120deg,#ff3c00,#ff3c00);
+  color:#1f0902;font-size:12px;font-weight:700;cursor:pointer;}
+#modal-close{padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);color:rgba(245,218,210,.85);font-size:12px;cursor:pointer;}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:rgba(26,8,3,.95);border:1px solid rgba(255,60,0,.3);border-radius:10px;
+  padding:10px 20px;font-size:12px;color:rgba(255,221,210,.95);z-index:600;
+  transition:transform .25s,opacity .25s;pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span id="tb-logo">◈</span>
+  <span id="tb-name">WALLPAPERS</span>
+  <div id="tb-right">
+    <div id="btn-home" onclick="goHome()">◈ DESKTOP</div>
+  </div>
+</div>
+
+<div id="ribbon">
+  <button class="tab-btn active" id="tab-browse" onclick="showView('browse')">BROWSE</button>
+  <button class="tab-btn" id="tab-categories" onclick="showView('categories')">CATEGORIES</button>
+  <button class="tab-btn" id="tab-library" onclick="showView('library')">LIBRARY</button>
+  <div class="rgap"></div>
+  <input class="rinp" id="search-inp" placeholder="Search…">
+  <select class="rsel" id="cat-sel">
+    <option value="general">General</option>
+    <option value="anime">Anime</option>
+    <option value="people">People</option>
+  </select>
+  <select class="rsel" id="sort-sel">
+    <option value="date_added">Newest</option>
+    <option value="views">Most Viewed</option>
+    <option value="favorites">Most Favorited</option>
+    <option value="random">Random</option>
+  </select>
+</div>
+
+<div id="main">
+  <div class="view active" id="view-browse">
+    <div id="hero">
+      <img id="hero-img">
+      <div id="hero-overlay">
+        <div id="hero-label">FEATURED</div>
+        <div id="hero-title">Featured Wallpaper</div>
+        <div id="hero-meta"></div>
+        <button id="hero-btn">SET AS WALLPAPER</button>
+      </div>
+    </div>
+    <div id="grid"></div>
+    <div id="empty-msg" style="display:none"></div>
+    <div id="pagination"></div>
+  </div>
+
+  <div class="view" id="view-categories">
+    <div id="cat-grid"></div>
+  </div>
+
+  <div class="view" id="view-library">
+    <div id="lib-grid" style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;"></div>
+    <div id="lib-empty" style="display:none;max-width:500px;margin:60px auto;text-align:center;color:rgba(235,177,160,.5);font-size:12.5px;">No wallpapers applied yet.</div>
+  </div>
+</div>
+
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <img id="modal-img" src="">
+  <div id="modal-actions">
+    <button id="modal-set">SET AS WALLPAPER</button>
+    <button id="modal-close" onclick="closeModal()">CLOSE</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var API='http://127.0.0.1:5000';
+var LIB_KEY='jarvis_wallpaper_library';
+var TS_KEY='jarvis_wallpaper_ts';
+var state={page:1,lastPage:1};
+var heroWall=null;
+
+var CATEGORIES=[
+  {name:'Nature',q:'nature',category:'general'},
+  {name:'Space',q:'space',category:'general'},
+  {name:'Anime',q:'',category:'anime'},
+  {name:'Cars',q:'cars',category:'general'},
+  {name:'City',q:'city',category:'general'},
+  {name:'Sci-Fi',q:'sci-fi',category:'general'},
+  {name:'Fantasy',q:'fantasy',category:'general'},
+  {name:'Cats',q:'cats',category:'general'},
+  {name:'Video Games',q:'video games',category:'general'}
+];
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function showView(name){
+  ['browse','categories','library'].forEach(function(v){
+    document.getElementById('view-'+v).classList.toggle('active', v===name);
+    document.getElementById('tab-'+v).classList.toggle('active', v===name);
+  });
+  document.getElementById('search-inp').style.visibility = name==='browse'?'visible':'hidden';
+  document.getElementById('cat-sel').style.visibility = name==='browse'?'visible':'hidden';
+  document.getElementById('sort-sel').style.visibility = name==='browse'?'visible':'hidden';
+  if(name==='library') renderLibrary();
+  if(name==='categories') loadCategoryTiles();
+}
+
+/* ── Hero ── */
+async function loadHero(){
+  try{
+    var res=await fetch(API+'/wallhaven/search?category=general&page=1&sort=views');
+    var data=await res.json();
+    if(data.error || !data.wallpapers.length) return;
+    heroWall=data.wallpapers[0];
+    document.getElementById('hero-img').src=heroWall.thumb;
+    document.getElementById('hero-meta').textContent=heroWall.resolution;
+    document.getElementById('hero').classList.add('has-img');
+    document.getElementById('hero-btn').onclick=function(){applyWallpaper(heroWall.full, heroWall.resolution);};
+  }catch(e){}
+}
+
+/* ── Browse ── */
+async function loadWallpapers(){
+  var grid=document.getElementById('grid');
+  grid.innerHTML='';
+  document.getElementById('empty-msg').style.display='none';
+  var q=encodeURIComponent(document.getElementById('search-inp').value.trim());
+  var cat=document.getElementById('cat-sel').value;
+  var sort=document.getElementById('sort-sel').value;
+  try{
+    var res=await fetch(API+'/wallhaven/search?q='+q+'&category='+cat+'&page='+state.page+'&sort='+sort);
+    var data=await res.json();
+    if(data.error || !data.wallpapers.length){
+      document.getElementById('empty-msg').style.display='block';
+      document.getElementById('empty-msg').textContent = data.error ? 'Could not connect to ULTRON server' : 'No wallpapers found';
+      document.getElementById('pagination').innerHTML='';
+      return;
+    }
+    state.lastPage=data.last_page;
+    grid.innerHTML=data.wallpapers.map(function(w){
+      return '<div class="wcard" data-full="'+escHtml(w.full)+'" data-resolution="'+escHtml(w.resolution)+'">'+
+        '<img src="'+escHtml(w.thumb)+'" loading="lazy">'+
+        '<div class="wcard-info"><span class="wcard-res">'+escHtml(w.resolution)+'</span>'+
+        '<button class="wcard-btn" data-action="set">SET</button></div>'+
+        '</div>';
+    }).join('');
+    Array.prototype.forEach.call(grid.querySelectorAll('.wcard'), function(card){
+      card.addEventListener('click', function(){
+        openPreview(card.getAttribute('data-full'));
+      });
+      var btn=card.querySelector('.wcard-btn[data-action="set"]');
+      if(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          applyWallpaper(card.getAttribute('data-full'), card.getAttribute('data-resolution'));
+        });
+      }
+    });
+    renderPagination();
+  }catch(e){
+    document.getElementById('empty-msg').style.display='block';
+    document.getElementById('empty-msg').textContent='Could not connect to ULTRON server';
+  }
+}
+function renderPagination(){
+  var p=document.getElementById('pagination');
+  if(state.lastPage<=1){p.innerHTML='';return;}
+  var pages=new Set([1,state.page-1,state.page,state.page+1,state.lastPage].filter(function(n){return n>=1&&n<=state.lastPage;}));
+  var html='';
+  Array.from(pages).sort(function(a,b){return a-b;}).forEach(function(n){
+    html+='<div class="pg'+(n===state.page?' active':'')+'" onclick="state.page='+n+';loadWallpapers()">'+n+'</div>';
+  });
+  p.innerHTML=html;
+}
+document.getElementById('search-inp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){state.page=1;loadWallpapers();}
+});
+document.getElementById('cat-sel').addEventListener('change',function(){state.page=1;loadWallpapers();});
+document.getElementById('sort-sel').addEventListener('change',function(){state.page=1;loadWallpapers();});
+
+/* ── Categories ── */
+var catTilesLoaded=false;
+function loadCategoryTiles(){
+  if(catTilesLoaded) return;
+  catTilesLoaded=true;
+  var grid=document.getElementById('cat-grid');
+  grid.innerHTML=CATEGORIES.map(function(c,idx){
+    return '<div class="ctile" data-idx="'+idx+'"><img id="ctile-img-'+idx+'"><div class="ctile-label">'+escHtml(c.name)+'</div></div>';
+  }).join('');
+  Array.prototype.forEach.call(grid.querySelectorAll('.ctile'), function(tile){
+    var idx=parseInt(tile.getAttribute('data-idx'),10);
+    var c=CATEGORIES[idx];
+    tile.addEventListener('click', function(){
+      document.getElementById('search-inp').value=c.q;
+      document.getElementById('cat-sel').value=c.category;
+      state.page=1;
+      showView('browse');
+      loadWallpapers();
+    });
+    fetch(API+'/wallhaven/search?q='+encodeURIComponent(c.q)+'&category='+c.category+'&page=1&sort=views')
+      .then(function(res){return res.json();})
+      .then(function(data){
+        if(data.wallpapers && data.wallpapers.length){
+          document.getElementById('ctile-img-'+idx).src=data.wallpapers[0].thumb;
+        }
+      }).catch(function(){});
+  });
+}
+
+/* ── Preview modal ── */
+function openPreview(url){
+  document.getElementById('modal-img').src=url;
+  document.getElementById('modal-set').onclick=function(){applyWallpaper(url,'');closeModal();};
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+
+/* ── Apply + Library ── */
+function loadLibrary(){
+  try{ return JSON.parse(localStorage.getItem(LIB_KEY)||'[]'); }catch(e){ return []; }
+}
+function saveLibrary(lib){
+  try{ localStorage.setItem(LIB_KEY, JSON.stringify(lib.slice(0,20))); }catch(e){}
+}
+function renderLibrary(){
+  var lib=loadLibrary();
+  var grid=document.getElementById('lib-grid');
+  document.getElementById('lib-empty').style.display = lib.length?'none':'block';
+  grid.innerHTML=lib.map(function(item){
+    return '<div class="wcard" data-url="'+escHtml(item.url)+'" data-label="'+escHtml(item.label)+'">'+
+      '<img src="'+escHtml(item.url)+'" loading="lazy">'+
+      '<div class="wcard-info"><span class="wcard-res">'+escHtml(item.label||'')+'</span></div>'+
+      '</div>';
+  }).join('');
+  Array.prototype.forEach.call(grid.querySelectorAll('.wcard'), function(card){
+    card.addEventListener('click', function(){
+      applyWallpaper(card.getAttribute('data-url'), card.getAttribute('data-label'));
+    });
+  });
+}
+async function applyWallpaper(url,label){
+  if(!url) return;
+  showToast('Applying wallpaper…');
+  try{
+    var res=await fetch(API+'/wallpaper/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})});
+    var data=await res.json();
+    if(data.success){
+      var lib=loadLibrary();
+      lib.unshift({url:url,label:label||'',ts:Date.now()});
+      saveLibrary(lib);
+      localStorage.setItem(TS_KEY, String(Date.now()));
+      showToast('Wallpaper applied — visible next time you open the desktop');
+    }else{
+      showToast('Failed to apply wallpaper');
+    }
+  }catch(e){
+    showToast('Connection error');
+  }
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+function goHome(){
+  if(window.self!==window.top){ window.parent.postMessage({jarvisWindow:'close'},'*'); return; }
+  window.location.href='desktop.html';
+}
+
+loadHero();
+loadWallpapers();
+</script>
+</body>
+</html>

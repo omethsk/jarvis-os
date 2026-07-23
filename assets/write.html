@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ULTRON Docs</title>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Inter:wght@300;400;500;600&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;600;700&family=Raleway:wght@300;400;600&family=Oswald:wght@300;400;600&family=Nunito:wght@300;400;600&family=Ubuntu:wght@300;400;500&family=PT+Sans:wght@400;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;600;700&family=Source+Code+Pro:wght@300;400;500&family=Bebas+Neue&family=Dancing+Script:wght@400;600;700&family=Pacifico&family=Noto+Serif:wght@400;700&family=Crimson+Text:wght@400;600&family=EB+Garamond:wght@400;600&family=Josefin+Sans:wght@300;400;600&family=Poppins:wght@300;400;500;600&family=Mulish:wght@300;400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<style>
+:root{
+  --bg:#180c08;--bar:#0e0603;--rbc:rgba(24,9,5,.98);
+  --bd:rgba(255,60,0,.16);--bdh:rgba(255,60,0,.42);
+  --ac:#ff3c00;--tx:rgba(255,219,208,.9);--txd:rgba(215,150,130,.5);--txm:rgba(255,194,175,.72);
+  --pg:#fcfaf9;--pw:816px;
+  --tbh:38px;--rbh:62px;--sh:26px;--pw2:320px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
+  font-family:'Inter',system-ui,sans-serif;color:var(--tx);}
+
+/* ── TOP BAR ─────────────────────────────────────────────────────── */
+#topbar{
+  height:var(--tbh);flex-shrink:0;
+  background:var(--bar);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;padding:0 10px;z-index:700;gap:4px;
+  user-select:none;-webkit-user-select:none;overflow:hidden;
+}
+/* logo */
+#tb-logo{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;
+  color:var(--ac);letter-spacing:2px;white-space:nowrap;padding-right:6px;flex-shrink:0;}
+/* File menu */
+.mwrap{position:relative;flex-shrink:0;}
+.mbtn{padding:0 10px;height:var(--tbh);display:flex;align-items:center;
+  font-size:12px;color:var(--txm);cursor:pointer;background:transparent;border:none;
+  font-family:'Inter',sans-serif;letter-spacing:.2px;transition:background .1s,color .1s;}
+.mbtn:hover,.mbtn.open{background:rgba(255,60,0,.13);color:var(--tx);}
+/* dropdown */
+.mdd{position:fixed;top:var(--tbh);background:rgba(24,9,4,.98);
+  border:1px solid var(--bdh);border-radius:10px;padding:5px;min-width:228px;
+  box-shadow:0 14px 48px rgba(0,0,0,.74);
+  opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none;
+  transition:opacity .13s,transform .13s;z-index:800;}
+.mdd.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all;}
+.mi{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 12px;border-radius:6px;cursor:pointer;
+  font-size:12px;color:var(--txm);transition:background .09s,color .09s;}
+.mi:hover{background:rgba(255,60,0,.12);color:var(--tx);}
+.mi.dis{opacity:.3;pointer-events:none;}
+.mi .ml{display:flex;align-items:center;gap:9px;}
+.mi .mic{font-size:13px;width:17px;text-align:center;opacity:.65;}
+.mi .mk{font-size:10px;color:rgba(210,141,120,.42);letter-spacing:.4px;}
+.msep{height:1px;background:rgba(255,60,0,.1);margin:4px 8px;}
+/* tb divider */
+#tb-vd{width:1px;height:20px;background:var(--bd);flex-shrink:0;margin:0 4px;}
+/* ribbon tabs in topbar */
+.rtab{padding:0 13px;height:var(--tbh);display:flex;align-items:center;
+  font-size:11.5px;letter-spacing:.5px;color:var(--txd);
+  cursor:pointer;border:none;background:transparent;position:relative;
+  font-family:'Inter',sans-serif;transition:color .12s;flex-shrink:0;}
+.rtab:hover{color:var(--txm);}
+.rtab.act{color:var(--ac);}
+.rtab.act::after{content:'';position:absolute;bottom:0;left:8px;right:8px;
+  height:2px;background:var(--ac);border-radius:2px 2px 0 0;
+  box-shadow:0 0 7px rgba(255,60,0,.65);}
+/* center: title + save */
+#tb-mid{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0;}
+#doctitle{background:transparent;border:none;outline:none;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--tx);
+  width:230px;border-bottom:1px solid transparent;transition:border-color .18s;padding:2px 6px;text-align:center;}
+#doctitle:focus{border-bottom-color:var(--ac);}
+#saveind{display:flex;align-items:center;gap:5px;font-size:10px;letter-spacing:1px;color:var(--txd);flex-shrink:0;}
+#savedot{width:5px;height:5px;border-radius:50%;background:rgba(0,215,95,.85);transition:background .3s;}
+#savedot.dirty{background:rgba(255,155,0,.9);animation:dblink 1.4s ease-in-out infinite;}
+@keyframes dblink{0%,100%{opacity:1}50%{opacity:.28}}
+/* right buttons */
+#tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.tbbtn{padding:4px 10px;border-radius:6px;border:1px solid var(--bd);background:rgba(255,60,0,.06);
+  color:var(--txd);cursor:pointer;font-size:10.5px;letter-spacing:.8px;
+  transition:all .13s;font-family:'Inter',sans-serif;white-space:nowrap;}
+.tbbtn:hover{background:rgba(255,60,0,.14);border-color:var(--bdh);color:var(--ac);}
+.tbbtn.on{background:rgba(255,60,0,.12);border-color:var(--ac);color:var(--ac);}
+
+/* ── RIBBON ──────────────────────────────────────────────────────── */
+#ribbon{
+  height:var(--rbh);flex-shrink:0;
+  background:rgba(24,9,5,.98);border-bottom:1px solid var(--bd);
+  display:flex;align-items:stretch;padding:0 6px;z-index:500;
+  overflow-x:auto;overflow-y:hidden;
+}
+#ribbon::-webkit-scrollbar{height:3px;}
+#ribbon::-webkit-scrollbar-thumb{background:rgba(255,60,0,.22);border-radius:2px;}
+.rp{display:none;align-items:stretch;gap:0;}
+.rp.act{display:flex;}
+/* groups */
+.rg{display:flex;flex-direction:column;padding:4px 5px 0;flex-shrink:0;}
+.rgb{flex:1;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;}
+.rgl{font-size:7.5px;letter-spacing:1.4px;color:rgba(255,60,0,.26);text-align:center;padding-top:2px;padding-bottom:3px;white-space:nowrap;}
+.rgsep{width:1px;background:rgba(255,60,0,.12);align-self:stretch;margin:3px 3px;flex-shrink:0;}
+/* buttons */
+.rb{min-width:26px;height:28px;border-radius:5px;border:1px solid transparent;
+  background:transparent;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--txd);font-family:'Inter',sans-serif;font-size:12px;
+  padding:0 5px;white-space:nowrap;flex-shrink:0;
+  transition:background .09s,border-color .09s,color .09s;}
+.rb:hover{background:rgba(255,60,0,.1);border-color:var(--bd);color:var(--tx);}
+.rb.on{background:rgba(255,60,0,.13);border-color:var(--ac);color:var(--ac);}
+.rb.lg{height:50px;flex-direction:column;gap:2px;padding:3px 7px;font-size:10.5px;min-width:40px;}
+.rb.lg .rbi{font-size:18px;}
+.rbi{font-size:13px;line-height:1;}
+.rsel{height:26px;background:rgba(0,0,0,.32);border:1px solid var(--bd);border-radius:5px;
+  color:var(--tx);font-size:11px;padding:0 5px;outline:none;
+  font-family:'Inter',sans-serif;cursor:pointer;flex-shrink:0;}
+.rsel:hover{border-color:var(--bdh);}
+.rsel option{background:#28120b;}
+.rcol{position:relative;height:28px;width:28px;flex-shrink:0;cursor:pointer;}
+.rcolface{position:absolute;inset:0;border-radius:5px;border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  transition:background .09s,border-color .09s;}
+.rcol:hover .rcolface{background:rgba(255,60,0,.1);border-color:var(--bdh);}
+.rcol input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+/* style chips */
+.schip{height:38px;min-width:68px;border-radius:5px;border:1px solid var(--bd);
+  background:rgba(0,0,0,.18);cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:0 7px;flex-shrink:0;transition:all .1s;}
+.schip:hover{background:rgba(255,60,0,.1);border-color:var(--bdh);}
+.schip.on{background:rgba(255,60,0,.12);border-color:var(--ac);}
+.scpre{color:#2e1f1a;font-size:10px;line-height:1;}
+.sclbl{font-size:7.5px;letter-spacing:.8px;color:var(--txd);margin-top:2px;}
+.rnumin{height:26px;width:50px;background:rgba(0,0,0,.3);border:1px solid var(--bd);
+  border-radius:5px;color:var(--tx);font-size:11px;padding:0 5px;outline:none;
+  font-family:'Inter',sans-serif;text-align:center;}
+.rnumin:focus{border-color:var(--ac);}
+
+/* ── EDITOR AREA ─────────────────────────────────────────────────── */
+#midrow{flex:1;display:flex;overflow:hidden;}
+#earea{
+  flex:1;overflow-y:auto;background:var(--bg);
+  background-image:radial-gradient(circle,rgba(255,60,0,.048) 1px,transparent 1px);
+  background-size:30px 30px;padding:28px 0 44px;
+}
+#earea::-webkit-scrollbar{width:6px;}
+#earea::-webkit-scrollbar-thumb{background:rgba(255,60,0,.18);border-radius:3px;}
+#page{
+  overflow:hidden;
+  width:var(--pw);min-height:1056px;margin:0 auto;background:var(--pg);
+  box-shadow:0 4px 44px rgba(0,0,0,.65),0 0 0 1px rgba(255,60,0,.1);
+  border-radius:2px;position:relative;cursor:text;
+}
+#pg-hdr,#pg-ftr{padding:8px 80px;font-size:9pt;color:#888;border-color:#dde;min-height:34px;outline:none;font-family:Georgia,serif;}
+#pg-hdr{border-bottom:1px dashed #ddd;}#pg-ftr{border-top:1px dashed #ddd;}
+#pg-hdr:empty::before{content:'Header';color:#bbb;pointer-events:none;}
+#pg-ftr:empty::before{content:'Footer';color:#bbb;pointer-events:none;}
+#editor{
+  min-height:950px;padding:48px 80px;
+  font-size:12pt;line-height:1.75;color:#2c1d18;cursor:text;
+  font-family:'Inter',system-ui,sans-serif;
+  outline:none;overflow-wrap:break-word;word-break:break-word;
+}
+#editor:empty::before{content:attr(placeholder);color:#aaa;pointer-events:none;}
+#editor p{margin-bottom:5px;}
+#editor h1{font-family:'Playfair Display',serif;font-size:26pt;font-weight:700;margin:16px 0 10px;color:#180c08;line-height:1.2;}
+#editor h2{font-family:'Playfair Display',serif;font-size:17pt;font-weight:700;margin:15px 0 7px;color:#180c08;border-bottom:1px solid #ddd;padding-bottom:4px;}
+#editor h3{font-family:'Inter',sans-serif;font-size:13pt;font-weight:700;margin:12px 0 5px;color:#281914;}
+#editor h4{font-family:'Inter',sans-serif;font-size:11pt;font-weight:600;margin:9px 0 4px;color:#333;text-transform:uppercase;letter-spacing:.4px;}
+#editor blockquote{border-left:3px solid #d43100;padding-left:16px;color:#555;font-style:italic;margin:10px 0;}
+#editor code{background:#f8f0ee;padding:2px 5px;border-radius:3px;font-family:'Source Code Pro',monospace;font-size:10.5pt;}
+#editor pre{background:#f8f0ee;padding:12px 16px;border-radius:4px;margin:10px 0;font-family:'Source Code Pro',monospace;font-size:10pt;white-space:pre-wrap;}
+#editor a{color:#cc3000;text-decoration:underline;}
+#editor .factbox{font-family:'Merriweather',serif;font-style:italic;background:#fcf4f2;border-left:4px solid #d43100;
+  border-radius:0 4px 4px 0;padding:10px 16px;margin:12px 0;color:#3c221a;font-size:11pt;line-height:1.55;}
+#editor .factbox b,#editor .factbox strong{font-style:normal;font-family:'Inter',sans-serif;color:#9c2400;
+  font-size:9pt;letter-spacing:.6px;text-transform:uppercase;display:block;margin-bottom:3px;}
+#editor img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:2px;}
+#editor table{border-collapse:collapse;width:100%;margin:10px 0;}
+#editor td,#editor th{border:1px solid #e0cbc4;padding:6px 12px;font-size:10.5pt;}
+#editor th{background:#f8e9e5;font-weight:600;}
+
+/* Font family CSS classes for Quill */
+.ql-font-inter{font-family:'Inter',system-ui,sans-serif;}
+.ql-font-roboto{font-family:'Roboto',sans-serif;}
+.ql-font-open-sans{font-family:'Open Sans',sans-serif;}
+.ql-font-lato{font-family:'Lato',sans-serif;}
+.ql-font-montserrat{font-family:'Montserrat',sans-serif;}
+.ql-font-poppins{font-family:'Poppins',sans-serif;}
+.ql-font-mulish{font-family:'Mulish',sans-serif;}
+.ql-font-josefin{font-family:'Josefin Sans',sans-serif;}
+.ql-font-raleway{font-family:'Raleway',sans-serif;}
+.ql-font-oswald{font-family:'Oswald',sans-serif;}
+.ql-font-nunito{font-family:'Nunito',sans-serif;}
+.ql-font-ubuntu{font-family:'Ubuntu',sans-serif;}
+.ql-font-pt-sans{font-family:'PT Sans',sans-serif;}
+.ql-font-arial{font-family:Arial,Helvetica,sans-serif;}
+.ql-font-verdana{font-family:Verdana,Geneva,sans-serif;}
+.ql-font-tahoma{font-family:Tahoma,Geneva,sans-serif;}
+.ql-font-trebuchet{font-family:'Trebuchet MS',sans-serif;}
+.ql-font-calibri{font-family:Calibri,'Carlito',sans-serif;}
+.ql-font-times{font-family:'Times New Roman',Times,serif;}
+.ql-font-georgia{font-family:Georgia,serif;}
+.ql-font-palatino{font-family:'Palatino Linotype','Book Antiqua',Palatino,serif;}
+.ql-font-garamond{font-family:Garamond,'EB Garamond',serif;}
+.ql-font-merriweather{font-family:'Merriweather',Georgia,serif;}
+.ql-font-playfair{font-family:'Playfair Display',Georgia,serif;}
+.ql-font-noto-serif{font-family:'Noto Serif',serif;}
+.ql-font-crimson{font-family:'Crimson Text',Georgia,serif;}
+.ql-font-eb-garamond{font-family:'EB Garamond',Garamond,serif;}
+.ql-font-courier{font-family:'Courier New',Courier,monospace;}
+.ql-font-consolas{font-family:Consolas,'Lucida Console',monospace;}
+.ql-font-source-code{font-family:'Source Code Pro',monospace;}
+.ql-font-orbitron{font-family:'Orbitron',sans-serif;}
+.ql-font-bebas{font-family:'Bebas Neue',Impact,sans-serif;}
+.ql-font-dancing{font-family:'Dancing Script',cursive;}
+.ql-font-pacifico{font-family:'Pacifico',cursive;}
+
+/* ── STATUS BAR ──────────────────────────────────────────────────── */
+#sbar{
+  height:var(--sh);flex-shrink:0;
+  background:var(--bar);border-top:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;z-index:700;
+  font-size:10px;letter-spacing:.9px;color:var(--txd);
+  font-family:'Inter',sans-serif;user-select:none;
+}
+#sbar span{display:flex;align-items:center;gap:12px;}
+
+/* ── JARVIS PANEL ────────────────────────────────────────────────── */
+#jpanel{
+  width:var(--pw2);flex-shrink:0;
+  background:rgba(20,7,3,.97);border-left:1px solid var(--bdh);
+  display:none;flex-direction:column;z-index:600;overflow:hidden;
+}
+#jpanel.open{display:flex;}
+#jp-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;}
+#jp-title{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--ac);letter-spacing:2px;}
+#jp-x{width:24px;height:24px;border-radius:5px;border:1px solid var(--bd);background:transparent;color:var(--txd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .12s;}
+#jp-x:hover{background:rgba(255,65,65,.1);color:rgba(255,100,100,.9);}
+#jp-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+#jp-msgs::-webkit-scrollbar{width:4px;}
+#jp-msgs::-webkit-scrollbar-thumb{background:rgba(255,60,0,.18);border-radius:2px;}
+.jm{display:flex;flex-direction:column;gap:3px;max-width:93%;}
+.jm.u{align-self:flex-end;align-items:flex-end;}
+.jm.b{align-self:flex-start;align-items:flex-start;}
+.jm-who{font-size:8px;letter-spacing:1.8px;color:var(--txd);}
+.jm.b .jm-who{color:var(--ac);}
+.jm-bub{padding:8px 11px;border-radius:10px;font-size:11.5px;line-height:1.6;word-break:break-word;}
+.jm.u .jm-bub{background:rgba(255,60,0,.13);border:1px solid rgba(255,60,0,.2);color:rgba(255,223,213,.92);border-radius:10px 10px 2px 10px;}
+.jm.b .jm-bub{background:rgba(255,60,0,.07);border:1px solid rgba(255,60,0,.17);color:rgba(255,210,196,.9);border-radius:10px 10px 10px 2px;}
+.jm-dots{display:flex;gap:4px;align-items:center;padding:3px 2px;}
+.jm-dots span{width:5px;height:5px;border-radius:50%;background:var(--ac);animation:jd .9s ease-in-out infinite;}
+.jm-dots span:nth-child(2){animation-delay:.18s;}
+.jm-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes jd{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+#jp-ft{padding:9px 11px;border-top:1px solid var(--bd);flex-shrink:0;display:flex;flex-direction:column;gap:6px;}
+#jp-inp{width:100%;background:rgba(28,10,5,.9);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;font-size:12px;color:var(--tx);outline:none;resize:none;height:58px;font-family:'Inter',sans-serif;transition:border-color .18s;}
+#jp-inp:focus{border-color:var(--ac);}
+#jp-inp::placeholder{color:var(--txd);}
+#jp-row{display:flex;gap:6px;}
+#jp-send{flex:1;padding:6px;border-radius:6px;background:rgba(255,60,0,.1);border:1px solid var(--ac);color:var(--ac);font-size:10.5px;letter-spacing:1px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .13s;}
+#jp-send:hover{background:rgba(255,60,0,.22);}
+#jp-mic{width:30px;height:30px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--txd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .12s;}
+#jp-mic:hover{background:rgba(255,60,0,.1);color:var(--tx);}
+#jp-mic.rec{background:rgba(255,40,40,.12);border-color:rgba(255,65,65,.36);color:rgba(255,95,95,.9);animation:mcp 1s ease-in-out infinite;}
+@keyframes mcp{0%,100%{box-shadow:0 0 0 0 rgba(255,40,40,.3)}50%{box-shadow:0 0 0 5px rgba(255,40,40,0)}}
+
+/* ── MODALS ──────────────────────────────────────────────────────── */
+.ovl{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.74);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+.ovl.open{display:flex;}
+.modal{background:rgba(26,10,5,.98);border:1px solid var(--bdh);border-radius:13px;padding:22px 25px;min-width:310px;max-width:470px;width:90%;box-shadow:0 20px 58px rgba(0,0,0,.72);}
+.mhd{font-family:'Orbitron',sans-serif;font-size:10.5px;font-weight:700;color:var(--ac);letter-spacing:2px;margin-bottom:15px;}
+.mlbl{font-size:10px;letter-spacing:1px;color:var(--txd);margin-bottom:5px;display:block;}
+.minp{width:100%;padding:8px 11px;border-radius:7px;background:rgba(0,0,0,.3);border:1px solid var(--bd);color:var(--tx);font-size:12.5px;outline:none;font-family:'Inter',sans-serif;transition:border-color .18s;margin-bottom:10px;}
+.minp:focus{border-color:var(--ac);}
+.mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
+.mb{padding:7px 15px;border-radius:7px;font-size:11px;letter-spacing:.8px;cursor:pointer;font-family:'Inter',sans-serif;border:1px solid var(--bd);background:transparent;color:var(--txd);transition:all .11s;}
+.mb:hover{background:rgba(255,60,0,.08);color:var(--tx);}
+.mb.p{background:rgba(255,60,0,.1);border-color:var(--ac);color:var(--ac);}
+.mb.p:hover{background:rgba(255,60,0,.22);}
+.mopts{display:flex;flex-direction:column;gap:7px;}
+.mopt{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:8px;border:1px solid var(--bd);cursor:pointer;transition:all .11s;}
+.mopt:hover{background:rgba(255,60,0,.08);border-color:var(--bdh);}
+.mopt .oi{font-size:20px;}.mopt .on{font-size:12px;color:var(--tx);}
+.mopt .od{font-size:10px;color:var(--txd);letter-spacing:.4px;margin-top:2px;}
+#sym-grid{display:grid;grid-template-columns:repeat(10,30px);gap:4px;margin:12px 0;}
+.sym{width:30px;height:30px;border-radius:5px;border:1px solid var(--bd);background:transparent;cursor:pointer;font-size:15px;color:var(--tx);display:flex;align-items:center;justify-content:center;transition:all .09s;}
+.sym:hover{background:rgba(255,60,0,.12);border-color:var(--bdh);color:var(--ac);}
+#wc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+.wci{background:rgba(0,0,0,.24);border:1px solid var(--bd);border-radius:7px;padding:10px 13px;}
+.wcv{font-size:22px;font-family:'Orbitron',sans-serif;color:var(--ac);font-weight:700;}
+.wck{font-size:9px;letter-spacing:1.4px;color:var(--txd);margin-top:3px;}
+
+/* ── TABLE PICKER ────────────────────────────────────────────────── */
+#tpk{position:fixed;z-index:910;background:rgba(26,10,5,.97);border:1px solid var(--bdh);border-radius:10px;padding:10px;display:none;box-shadow:0 10px 38px rgba(0,0,0,.62);}
+#tpk.open{display:block;}
+#tpk-lbl{font-size:9px;letter-spacing:1.4px;color:var(--ac);text-align:center;margin-bottom:7px;}
+#tpk-g{display:grid;grid-template-columns:repeat(8,18px);gap:3px;}
+.tc{width:18px;height:18px;border-radius:3px;border:1px solid var(--bd);cursor:pointer;transition:all .08s;}
+.tc.on{background:rgba(255,60,0,.22);border-color:var(--ac);}
+
+/* ── FIND BAR ────────────────────────────────────────────────────── */
+#fbar{position:fixed;top:calc(var(--tbh)+var(--rbh)+8px);right:16px;z-index:710;
+  background:rgba(26,10,5,.97);border:1px solid var(--bdh);border-radius:10px;
+  padding:11px 13px;min-width:262px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.52);}
+#fbar.open{display:block;}
+.fbr{display:flex;gap:5px;margin-bottom:5px;align-items:center;}
+.fbr:last-child{margin:0;}
+.fbi{flex:1;padding:5px 8px;border-radius:5px;background:rgba(0,0,0,.4);border:1px solid var(--bd);color:var(--tx);font-size:11.5px;outline:none;font-family:'Inter',sans-serif;}
+.fbi:focus{border-color:var(--ac);}
+.fbtn{padding:5px 8px;border-radius:5px;background:rgba(255,60,0,.07);border:1px solid var(--bd);color:var(--txd);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .1s;white-space:nowrap;}
+.fbtn:hover{background:rgba(255,60,0,.16);color:var(--tx);}
+#fb-x{background:transparent;border:none;color:var(--txd);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;transition:color .1s;}
+#fb-x:hover{color:rgba(255,85,85,.8);}
+#fb-st{font-size:9.5px;letter-spacing:.8px;color:var(--txd);margin-top:5px;}
+
+/* ── CONTEXT MENU ────────────────────────────────────────────────── */
+#ctxm{position:fixed;z-index:860;background:rgba(26,10,5,.97);border:1px solid var(--bdh);border-radius:9px;padding:5px;display:none;min-width:152px;box-shadow:0 10px 36px rgba(0,0,0,.62);}
+#ctxm.open{display:block;}
+.ci{padding:7px 12px;border-radius:6px;font-size:11.5px;color:var(--txd);cursor:pointer;transition:all .09s;display:flex;align-items:center;gap:8px;}
+.ci:hover{background:rgba(255,60,0,.1);color:var(--tx);}
+.cisep{height:1px;background:rgba(255,60,0,.1);margin:3px 6px;}
+
+
+/* ── PRINT ───────────────────────────────────────────────────────── */
+@media print{#topbar,#ribbon,#sbar,#jpanel,#midrow,#fbar,#ctxm,.ovl,#tpk{display:none!important;}#earea{display:block!important;overflow:visible!important;background:white!important;padding:0!important;}#page{width:100%!important;box-shadow:none!important;margin:0!important;}}
+
+/* ── APP SHELL ───────────────────────────────────────────────────── */
+#app{position:absolute;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+</style>
+</head>
+<body>
+<div id="app">
+<!-- ══ TOP BAR (logo + File menu + ribbon tabs + title + buttons) ══ -->
+<div id="topbar">
+  <span id="tb-logo">◈ ULTRON DOCS</span>
+
+  <!-- File dropdown -->
+  <div class="mwrap">
+    <button class="mbtn" onclick="tmenu('file')">File</button>
+    <div class="mdd" id="dd-file">
+      <div class="mi" onclick="newDoc()"><div class="ml"><span class="mic">📄</span>New Document</div><span class="mk">Ctrl+N</span></div>
+      <div class="mi" onclick="openDoc()"><div class="ml"><span class="mic">📂</span>Open…</div><span class="mk">Ctrl+O</span></div>
+      <div class="msep"></div>
+      <div class="mi" onclick="saveDoc()"><div class="ml"><span class="mic">💾</span>Save</div><span class="mk">Ctrl+S</span></div>
+      <div class="mi" onclick="showExport()"><div class="ml"><span class="mic">📤</span>Export As…</div></div>
+      <div class="mi" onclick="window.print()"><div class="ml"><span class="mic">🖨</span>Print…</div><span class="mk">Ctrl+P</span></div>
+      <div class="msep"></div>
+      <div class="mi" onclick="showDocProps()"><div class="ml"><span class="mic">ℹ</span>Document Properties</div></div>
+      <div class="msep"></div>
+      <div class="mi" onclick="goHome()"><div class="ml"><span class="mic">⬡</span>Return to Desktop</div></div>
+    </div>
+  </div>
+
+  <div id="tb-vd"></div>
+
+  <!-- Ribbon tabs -->
+  <button class="rtab act" data-t="home"   onclick="switchTab('home')">Home</button>
+  <button class="rtab"     data-t="insert" onclick="switchTab('insert')">Insert</button>
+  <button class="rtab"     data-t="design" onclick="switchTab('design')">Design</button>
+  <button class="rtab"     data-t="layout" onclick="switchTab('layout')">Layout</button>
+  <button class="rtab"     data-t="review" onclick="switchTab('review')">Review</button>
+  <button class="rtab"     data-t="view"   onclick="switchTab('view')">View</button>
+
+  <!-- Center: title + save -->
+  <div id="tb-mid">
+    <input id="doctitle" type="text" value="Untitled Document" spellcheck="false" autocomplete="off">
+    <div id="saveind"><div id="savedot"></div><span id="savelbl">SAVED</span></div>
+  </div>
+
+  <!-- Right buttons -->
+  <div id="tb-right">
+    <button class="tbbtn" id="btn-jp" onclick="togglePanel()">◈ ULTRON</button>
+    <button class="tbbtn" onclick="goHome()">⬡ DESKTOP</button>
+  </div>
+</div>
+
+<!-- ══ RIBBON ═══════════════════════════════════════════════════════ -->
+<div id="ribbon">
+
+  <!-- HOME ─────────────────── -->
+  <div class="rp act" id="rp-home">
+    <div class="rg">
+      <div class="rgb">
+        <button class="rb lg" title="Paste" onclick="document.execCommand('paste')"><span class="rbi">📋</span>Paste</button>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <button class="rb" style="width:64px;font-size:11px" onclick="document.execCommand('cut')">✂ Cut</button>
+          <button class="rb" style="width:64px;font-size:11px" onclick="document.execCommand('copy')">⎘ Copy</button>
+        </div>
+      </div>
+      <div class="rgl">CLIPBOARD</div>
+    </div>
+    <div class="rgsep"></div>
+
+    <div class="rg">
+      <div class="rgb" style="flex-wrap:wrap;max-width:340px;align-content:flex-start;gap:3px">
+        <!-- Row 1: font + size + adj -->
+        <select class="rsel" id="sel-font" style="width:136px" onchange="applyFont(this.value)">
+          <optgroup label="── Sans-Serif ──">
+            <option value="inter">Inter</option>
+            <option value="roboto">Roboto</option>
+            <option value="open-sans">Open Sans</option>
+            <option value="lato">Lato</option>
+            <option value="montserrat">Montserrat</option>
+            <option value="poppins">Poppins</option>
+            <option value="mulish">Mulish</option>
+            <option value="josefin">Josefin Sans</option>
+            <option value="raleway">Raleway</option>
+            <option value="oswald">Oswald</option>
+            <option value="nunito">Nunito</option>
+            <option value="ubuntu">Ubuntu</option>
+            <option value="pt-sans">PT Sans</option>
+            <option value="arial">Arial</option>
+            <option value="verdana">Verdana</option>
+            <option value="tahoma">Tahoma</option>
+            <option value="trebuchet">Trebuchet MS</option>
+            <option value="calibri">Calibri</option>
+          </optgroup>
+          <optgroup label="── Serif ──">
+            <option value="times">Times New Roman</option>
+            <option value="georgia">Georgia</option>
+            <option value="palatino">Palatino</option>
+            <option value="garamond">Garamond</option>
+            <option value="merriweather">Merriweather</option>
+            <option value="playfair">Playfair Display</option>
+            <option value="noto-serif">Noto Serif</option>
+            <option value="crimson">Crimson Text</option>
+            <option value="eb-garamond">EB Garamond</option>
+          </optgroup>
+          <optgroup label="── Monospace ──">
+            <option value="courier">Courier New</option>
+            <option value="consolas">Consolas</option>
+            <option value="source-code">Source Code Pro</option>
+          </optgroup>
+          <optgroup label="── Display ──">
+            <option value="orbitron">Orbitron</option>
+            <option value="bebas">Bebas Neue</option>
+            <option value="dancing">Dancing Script</option>
+            <option value="pacifico">Pacifico</option>
+          </optgroup>
+        </select>
+        <select class="rsel" id="sel-size" style="width:52px" onchange="document.execCommand('fontSize',false,'3');document.execCommand('insertHTML',false,''); editor.focus()">
+          <option value="8px">8</option><option value="9px">9</option><option value="10px">10</option>
+          <option value="11px">11</option><option value="12px">12</option><option value="14px" selected>14</option>
+          <option value="16px">16</option><option value="18px">18</option><option value="20px">20</option>
+          <option value="22px">22</option><option value="24px">24</option><option value="26px">26</option>
+          <option value="28px">28</option><option value="32px">32</option><option value="36px">36</option>
+          <option value="40px">40</option><option value="48px">48</option><option value="56px">56</option>
+          <option value="64px">64</option><option value="72px">72</option><option value="96px">96</option>
+        </select>
+        <button class="rb" title="Increase font size" onclick="adjSize(1)" style="font-size:11px">A+</button>
+        <button class="rb" title="Decrease font size" onclick="adjSize(-1)" style="font-size:11px">A-</button>
+        <!-- Row 2: B I U S x² x₂ colors -->
+        <button class="rb" id="rb-b"  title="Bold (Ctrl+B)"      onclick="tfmt('bold')"><b>B</b></button>
+        <button class="rb" id="rb-i"  title="Italic (Ctrl+I)"    onclick="tfmt('italic')"><i style="font-style:italic">I</i></button>
+        <button class="rb" id="rb-u"  title="Underline (Ctrl+U)" onclick="tfmt('underline')"><u>U</u></button>
+        <button class="rb" id="rb-s"  title="Strikethrough"      onclick="tfmt('strike')" style="text-decoration:line-through">S</button>
+        <button class="rb" id="rb-x2" title="Superscript"        onclick="tscript('super')" style="font-size:11px">x²</button>
+        <button class="rb" id="rb-x1" title="Subscript"          onclick="tscript('sub')"   style="font-size:11px">x₂</button>
+        <div class="rcol" title="Text color"><div class="rcolface"><span style="font-size:13px;border-bottom:3px solid #c00;padding-bottom:1px;line-height:1.1">A</span></div><input type="color" id="col-txt" value="#000000" onchange="document.execCommand('foreColor',false,this.value)"></div>
+        <div class="rcol" title="Highlight color"><div class="rcolface"><span style="font-size:12px;background:rgba(255,215,0,.55);padding:0 2px">A</span></div><input type="color" id="col-bg" value="#ffff00" onchange="document.execCommand('backColor',false,this.value)"></div>
+        <button class="rb" title="Clear formatting (Ctrl+\)" onclick="clearFmt()" style="font-size:11px">✕</button>
+      </div>
+      <div class="rgl">FONT</div>
+    </div>
+    <div class="rgsep"></div>
+
+    <div class="rg">
+      <div class="rgb" style="flex-wrap:wrap;max-width:200px;align-content:flex-start;gap:3px">
+        <button class="rb" id="rb-ul" title="Bullet list"   onclick="tlist('bullet')" style="font-size:11px">• ≡</button>
+        <button class="rb" id="rb-ol" title="Numbered list" onclick="tlist('ordered')" style="font-size:11px">1.</button>
+        <button class="rb" title="Decrease indent" onclick="document.execCommand('outdent')" style="font-size:11px">⇤</button>
+        <button class="rb" title="Increase indent" onclick="document.execCommand('indent')" style="font-size:11px">⇥</button>
+        <button class="rb" id="rb-al" title="Align left"    onclick="talign('left')"    style="font-size:11px">≡L</button>
+        <button class="rb" id="rb-ac" title="Center"        onclick="talign('center')"  style="font-size:11px">≡C</button>
+        <button class="rb" id="rb-ar" title="Align right"   onclick="talign('right')"   style="font-size:11px">≡R</button>
+        <button class="rb" id="rb-aj" title="Justify"       onclick="talign('justify')" style="font-size:11px">≡J</button>
+        <select class="rsel" title="Line spacing" style="width:58px" onchange="setLH(this.value)">
+          <option value="1">1.0</option><option value="1.15">1.15</option>
+          <option value="1.5">1.5</option><option value="1.75" selected>1.75</option>
+          <option value="2">2.0</option><option value="2.5">2.5</option><option value="3">3.0</option>
+        </select>
+        <div class="rcol" title="Paragraph shading"><div class="rcolface" style="font-size:11px">🎨</div><input type="color" id="col-sh" value="#ffffff" onchange="document.execCommand('backColor',false,this.value)"></div>
+      </div>
+      <div class="rgl">PARAGRAPH</div>
+    </div>
+    <div class="rgsep"></div>
+
+    <div class="rg">
+      <div class="rgb" style="gap:4px;flex-wrap:wrap;align-content:center;max-width:340px">
+        <div class="schip on" id="sc-normal"  onclick="applyStyle('normal')"><div class="scpre" style="font-size:10px">Aa</div><div class="sclbl">NORMAL</div></div>
+        <div class="schip"    id="sc-h1"      onclick="applyStyle('h1')"><div class="scpre" style="font-size:13px;font-weight:700">Aa</div><div class="sclbl">HEADING 1</div></div>
+        <div class="schip"    id="sc-h2"      onclick="applyStyle('h2')"><div class="scpre" style="font-size:11px;font-weight:600">Aa</div><div class="sclbl">HEADING 2</div></div>
+        <div class="schip"    id="sc-h3"      onclick="applyStyle('h3')"><div class="scpre" style="font-size:10px;font-weight:600">Aa</div><div class="sclbl">HEADING 3</div></div>
+        <div class="schip"    id="sc-title"   onclick="applyTitleStyle()"><div class="scpre" style="font-size:13px;font-weight:700;letter-spacing:1px">Aa</div><div class="sclbl">TITLE</div></div>
+        <div class="schip"    id="sc-sub"     onclick="applySubStyle()"><div class="scpre" style="font-size:10px;color:#555;letter-spacing:.5px">Aa</div><div class="sclbl">SUBTITLE</div></div>
+        <div class="schip"    id="sc-bq"      onclick="applyStyle('bq')"><div class="scpre" style="font-style:italic;font-size:9px;border-left:2px solid #0a8;padding-left:3px">Aa</div><div class="sclbl">QUOTE</div></div>
+        <div class="schip"    id="sc-cb"      onclick="applyStyle('cb')"><div class="scpre" style="font-family:monospace;font-size:9px;background:#eee;padding:1px 3px">Aa</div><div class="sclbl">CODE</div></div>
+      </div>
+      <div class="rgl">STYLES</div>
+    </div>
+  </div>
+
+  <!-- INSERT ─────────────────── -->
+  <div class="rp" id="rp-insert">
+    <div class="rg">
+      <div class="rgb">
+        <button class="rb lg" id="rb-tbl" title="Insert table" onclick="openTpk(event)"><span class="rbi">⊞</span>Table</button>
+      </div>
+      <div class="rgl">TABLE</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="document.getElementById('img-in').click()">🖼 Picture</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="insShape()">⬟ Shape</button>
+      </div>
+      <div class="rgl">ILLUSTRATIONS</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="openLink()">🔗 Hyperlink</button>
+      </div>
+      <div class="rgl">LINKS</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="toggleHF('hdr')">▲ Header</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="toggleHF('ftr')">▼ Footer</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="insPageNum()">⎗ Page No.</button>
+      </div>
+      <div class="rgl">HEADER &amp; FOOTER</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="insPageBreak()">⎘ Page Break</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="insDate()">📅 Date/Time</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="openSymbol()">Ω Symbol</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="insHRule()">— H. Rule</button>
+      </div>
+      <div class="rgl">TEXT</div>
+    </div>
+  </div>
+
+  <!-- DESIGN ─────────────────── -->
+  <div class="rp" id="rp-design">
+    <div class="rg">
+      <div class="rgb" style="gap:5px">
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="applyTheme('default')">Default</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="applyTheme('minimal')">Minimal</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="applyTheme('classic')">Classic</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="applyTheme('modern')">Modern</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="applyTheme('dark')">Dark</button>
+      </div>
+      <div class="rgl">THEMES</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:5px">
+        <div class="rcol" title="Page background color" style="width:110px;height:28px">
+          <div class="rcolface" style="width:100%;border-radius:5px;font-size:11px;padding:0 8px;justify-content:flex-start;gap:5px"><span>🎨</span>Page Color</div>
+          <input type="color" id="col-page" value="#fcfaf9" onchange="document.getElementById('page').style.background=this.value">
+        </div>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="toggleBorder()">◻ Border</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="addWatermark()">⚠ Watermark</button>
+      </div>
+      <div class="rgl">PAGE BACKGROUND</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:8px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:9px;color:var(--txd);letter-spacing:.7px">BEFORE (pt)</div>
+          <input class="rnumin" id="para-b" type="number" value="0" min="0" max="72" onchange="setParaSpacing()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:9px;color:var(--txd);letter-spacing:.7px">AFTER (pt)</div>
+          <input class="rnumin" id="para-a" type="number" value="5" min="0" max="72" onchange="setParaSpacing()">
+        </div>
+      </div>
+      <div class="rgl">PARAGRAPH SPACING</div>
+    </div>
+  </div>
+
+  <!-- LAYOUT ─────────────────── -->
+  <div class="rp" id="rp-layout">
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setMargins('normal')">Normal</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setMargins('narrow')">Narrow</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setMargins('wide')">Wide</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setMargins('none')">None</button>
+      </div>
+      <div class="rgl">MARGINS</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" id="rb-port" style="font-size:11px;padding:0 9px" onclick="setOrientation('portrait')">▯ Portrait</button>
+        <button class="rb" id="rb-land" style="font-size:11px;padding:0 9px" onclick="setOrientation('landscape')">▭ Landscape</button>
+      </div>
+      <div class="rgl">ORIENTATION</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setPageSize('a4')">A4</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setPageSize('letter')">Letter</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setPageSize('legal')">Legal</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="setPageSize('a3')">A3</button>
+      </div>
+      <div class="rgl">SIZE</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="setCols(1)">1</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="setCols(2)">2</button>
+        <button class="rb" style="font-size:11px;padding:0 9px" onclick="setCols(3)">3</button>
+      </div>
+      <div class="rgl">COLUMNS</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:6px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:9px;color:var(--txd);letter-spacing:.7px">LEFT (px)</div>
+          <input class="rnumin" id="ind-l" type="number" value="0" min="0" max="300" onchange="setIndent()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:9px;color:var(--txd);letter-spacing:.7px">RIGHT (px)</div>
+          <input class="rnumin" id="ind-r" type="number" value="0" min="0" max="300" onchange="setIndent()">
+        </div>
+      </div>
+      <div class="rgl">INDENT</div>
+    </div>
+  </div>
+
+  <!-- REVIEW ─────────────────── -->
+  <div class="rp" id="rp-review">
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb lg" onclick="showWC()"><span class="rbi">🔢</span>Count</button>
+        <button class="rb lg" onclick="checkSpell()"><span class="rbi">✔</span>Spelling</button>
+      </div>
+      <div class="rgl">PROOFING</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="toggleFind()">🔍 Find</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="toggleFind(true)">🔁 Replace</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="gotoLine()">→ Go To</button>
+      </div>
+      <div class="rgl">NAVIGATE</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:3px;flex-wrap:wrap;max-width:180px;align-content:flex-start">
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="changeCase('upper')">AA Upper</button>
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="changeCase('lower')">aa lower</button>
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="changeCase('title')">Aa Title</button>
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="changeCase('sentence')">A. Sentence</button>
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="changeCase('toggle')">aA Toggle</button>
+      </div>
+      <div class="rgl">CHANGE CASE</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="sortLines('asc')">↑ A→Z</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="sortLines('desc')">↓ Z→A</button>
+      </div>
+      <div class="rgl">SORT</div>
+    </div>
+  </div>
+
+  <!-- VIEW ─────────────────── -->
+  <div class="rp" id="rp-view">
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 9px" id="rb-fs" onclick="toggleFS()">⛶ Full Screen</button>
+      </div>
+      <div class="rgl">VIEWS</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" id="rb-hf"   style="font-size:11px;padding:0 8px" onclick="toggleHF()">↕ Header/Footer</button>
+        <button class="rb" id="rb-grid" style="font-size:11px;padding:0 8px" onclick="toggleGrid()">⊞ Grid</button>
+      </div>
+      <div class="rgl">SHOW</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:5px;align-items:center">
+        <button class="rb" onclick="setZoom(_zoom-10)" style="padding:0 6px">−</button>
+        <span id="zoomval" style="font-size:11px;color:var(--txm);min-width:36px;text-align:center;cursor:pointer" onclick="setZoom(100)">100%</span>
+        <button class="rb" onclick="setZoom(_zoom+10)" style="padding:0 6px">+</button>
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="setZoom(100)">100%</button>
+        <button class="rb" style="font-size:10.5px;padding:0 7px" onclick="fitPage()">Width</button>
+      </div>
+      <div class="rgl">ZOOM</div>
+    </div>
+    <div class="rgsep"></div>
+    <div class="rg">
+      <div class="rgb" style="gap:4px">
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="saveDoc()">💾 Save</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="showExport()">📤 Export</button>
+        <button class="rb" style="font-size:11px;padding:0 8px" onclick="window.print()">🖨 Print</button>
+      </div>
+      <div class="rgl">DOCUMENT</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MIDDLE ROW (editor + jarvis panel) ═══════════════════════════ -->
+<div id="midrow">
+
+<!-- ══ EDITOR ═══════════════════════════════════════════════════════ -->
+<div id="earea">
+  <div id="page">
+    <div id="pg-hdr" contenteditable="true" spellcheck="false" style="display:none"></div>
+    <div id="editor" contenteditable="true" spellcheck="false" placeholder="Start typing your document…"></div>
+    <div id="pg-ftr" contenteditable="true" spellcheck="false" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══ JARVIS PANEL ══════════════════════════════════════════════════ -->
+<div id="jpanel">
+  <div id="jp-hd"><span id="jp-title">◈ ASK ULTRON</span><button id="jp-x" onclick="togglePanel()">✕</button></div>
+  <div id="jp-msgs">
+    <div class="jm b">
+      <span class="jm-who">ULTRON</span>
+      <div class="jm-bub">Good day. I am ULTRON, your document assistant. I can write, edit, format, and summarise your documents. How may I assist you?</div>
+    </div>
+  </div>
+  <div id="jp-ft">
+    <textarea id="jp-inp" placeholder="Ask ULTRON anything…"></textarea>
+    <div id="jp-row">
+      <button id="jp-mic" title="Voice input" onclick="toggleVoice()">🎤</button>
+      <button id="jp-send" onclick="sendMsg()">SEND</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #midrow -->
+
+<!-- ══ STATUS BAR ════════════════════════════════════════════════════ -->
+<div id="sbar">
+  <span>
+    <span id="st-w">Words: 0</span>
+    <span id="st-c">Chars: 0</span>
+    <span id="st-p">Pg 1</span>
+    <span id="st-pos">Ln 1, Col 1</span>
+  </span>
+  <span>
+    <span id="st-z" style="cursor:pointer" onclick="setZoom(100)">100%</span>
+    <span id="st-t"></span>
+  </span>
+</div>
+</div><!-- end #app -->
+
+<!-- ══ TABLE PICKER ══════════════════════════════════════════════════ -->
+<div id="tpk"><div id="tpk-lbl">0 × 0</div><div id="tpk-g"></div></div>
+
+<!-- ══ FIND BAR ══════════════════════════════════════════════════════ -->
+<div id="fbar">
+  <div class="fbr">
+    <input class="fbi" id="fb-q" placeholder="Find…" oninput="fbScan()">
+    <button class="fbtn" onclick="fbStep(-1)">↑</button>
+    <button class="fbtn" onclick="fbStep(1)">↓</button>
+    <button id="fb-x" onclick="toggleFind()">✕</button>
+  </div>
+  <div class="fbr">
+    <input class="fbi" id="fb-r" placeholder="Replace with…">
+    <button class="fbtn" onclick="fbOne()">One</button>
+    <button class="fbtn" onclick="fbAll()">All</button>
+  </div>
+  <div id="fb-st"></div>
+</div>
+
+<!-- ══ MODALS ════════════════════════════════════════════════════════ -->
+<div class="ovl" id="mo-exp">
+  <div class="modal">
+    <div class="mhd">EXPORT DOCUMENT</div>
+    <div class="mopts">
+      <div class="mopt" onclick="doExport('html')"><span class="oi">🌐</span><div><div class="on">HTML File</div><div class="od">PRESERVES ALL FORMATTING</div></div></div>
+      <div class="mopt" onclick="doExport('txt')"><span class="oi">📄</span><div><div class="on">Plain Text (.txt)</div><div class="od">TEXT CONTENT ONLY</div></div></div>
+      <div class="mopt" onclick="doExport('md')"><span class="oi">📝</span><div><div class="on">Markdown (.md)</div><div class="od">FORMATTED MARKDOWN</div></div></div>
+    </div>
+    <div class="mrow"><button class="mb" onclick="closeO('mo-exp')">CANCEL</button></div>
+  </div>
+</div>
+<div class="ovl" id="mo-link">
+  <div class="modal">
+    <div class="mhd">INSERT HYPERLINK</div>
+    <label class="mlbl">URL</label>
+    <input class="minp" id="lnk-url" type="url" placeholder="https://">
+    <label class="mlbl">DISPLAY TEXT <span style="opacity:.42">(optional)</span></label>
+    <input class="minp" id="lnk-txt">
+    <div class="mrow">
+      <button class="mb" onclick="closeO('mo-link')">CANCEL</button>
+      <button class="mb p" onclick="doLink()">INSERT</button>
+    </div>
+  </div>
+</div>
+<div class="ovl" id="mo-sym">
+  <div class="modal" style="max-width:390px">
+    <div class="mhd">INSERT SYMBOL</div>
+    <div id="sym-grid"></div>
+    <div class="mrow"><button class="mb p" onclick="closeO('mo-sym')">CLOSE</button></div>
+  </div>
+</div>
+<div class="ovl" id="mo-wc">
+  <div class="modal" style="max-width:330px">
+    <div class="mhd">WORD COUNT</div>
+    <div id="wc-grid"></div>
+    <div class="mrow"><button class="mb p" onclick="closeO('mo-wc')">CLOSE</button></div>
+  </div>
+</div>
+<div class="ovl" id="mo-props">
+  <div class="modal">
+    <div class="mhd">DOCUMENT PROPERTIES</div>
+    <label class="mlbl">TITLE</label><input class="minp" id="pr-title">
+    <label class="mlbl">AUTHOR</label><input class="minp" id="pr-author" placeholder="Author name">
+    <label class="mlbl">SUBJECT</label><input class="minp" id="pr-subj" placeholder="Subject">
+    <label class="mlbl">KEYWORDS</label><input class="minp" id="pr-kw" placeholder="comma, separated">
+    <div class="mrow">
+      <button class="mb" onclick="closeO('mo-props')">CANCEL</button>
+      <button class="mb p" onclick="saveProps()">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div id="ctxm">
+  <div class="ci" onclick="document.execCommand('cut')">✂ Cut</div>
+  <div class="ci" onclick="document.execCommand('copy')">⎘ Copy</div>
+  <div class="ci" onclick="document.execCommand('paste')">📋 Paste</div>
+  <div class="cisep"></div>
+  <div class="ci" onclick="tfmt('bold')"><b>B</b> Bold</div>
+  <div class="ci" onclick="tfmt('italic')"><i style="font-style:italic">I</i> Italic</div>
+  <div class="ci" onclick="openLink()">🔗 Hyperlink</div>
+  <div class="cisep"></div>
+  <div class="ci" onclick="changeCase('title')">Aa Title Case</div>
+  <div class="ci" onclick="changeCase('upper')">AA UPPERCASE</div>
+  <div class="ci" onclick="clearFmt()">✕ Clear Format</div>
+</div>
+
+<input type="file" id="file-in" style="display:none" accept=".html,.txt,.md" onchange="loadFile(event)">
+<input type="file" id="img-in"  style="display:none" accept="image/*"        onchange="embedImg(event)">
+
+<script>
+/* ── LAYOUT FIX: Wayland configure event fires at ~750ms and causes
+   WebKit to recalculate layout incorrectly. Force #app dimensions
+   explicitly on every resize and at known trigger points. ────────── */
+var _app = document.getElementById('app');
+function fixLayout(){
+  var w = window.innerWidth  || document.documentElement.clientWidth  || 1920;
+  var h = window.innerHeight || document.documentElement.clientHeight || 1080;
+  _app.style.width  = w + 'px';
+  _app.style.height = h + 'px';
+}
+window.addEventListener('resize', fixLayout);
+fixLayout();
+setTimeout(fixLayout, 200);
+setTimeout(fixLayout, 800);
+setTimeout(fixLayout, 1200);
+
+var editor = document.getElementById('editor');
+setTimeout(function(){ editor.focus(); }, 300);
+
+// Click anywhere on the page to focus editor
+document.getElementById('page').addEventListener('click', function(e) {
+  if (e.target === this || e.target.id === 'pg-hdr' || e.target.id === 'pg-ftr') return;
+  editor.focus();
+});
+
+/* ── FONT HELPER ──────────────────────────────────────────────────── */
+function applyFont(v) {
+  document.execCommand('fontName',false,v||'inherit');
+  editor.focus();
+}
+
+/* ── FORMAT HELPERS ───────────────────────────────────────────────── */
+function tfmt(f){ document.execCommand(f==='strike'?'strikeThrough':f==='script'?'':f, false); editor.focus(); syncR(); }
+function talign(v){ var cmd={left:'justifyLeft',center:'justifyCenter',right:'justifyRight',justify:'justifyFull'}[v]||'justifyLeft';document.execCommand(cmd); editor.focus(); syncR(); }
+function tlist(t){ document.execCommand(t==='ordered'?'insertOrderedList':'insertUnorderedList'); editor.focus(); syncR(); }
+function tscript(v){ document.execCommand(v==='super'?'superscript':'subscript'); editor.focus(); syncR(); }
+function clearFmt(){ document.execCommand('removeFormat'); editor.focus(); }
+
+function applyStyle(v){
+  document.execCommand('formatBlock',false,'p');
+  if(v==='h1') document.execCommand('formatBlock',false,'h1');
+  else if(v==='h2') document.execCommand('formatBlock',false,'h2');
+  else if(v==='h3') document.execCommand('formatBlock',false,'h3');
+  else if(v==='h4') document.execCommand('formatBlock',false,'h4');
+  else if(v==='bq') document.execCommand('formatBlock',false,'blockquote');
+  else if(v==='cb') document.execCommand('formatBlock',false,'pre');
+  editor.focus(); syncR();
+}
+function applyTitleStyle(){ document.execCommand('formatBlock',false,'h1'); document.execCommand('justifyCenter'); editor.focus(); syncR(); }
+function applySubStyle(){ document.execCommand('formatBlock',false,'h2'); document.execCommand('justifyCenter'); editor.focus(); syncR(); }
+
+function adjSize(dir){
+  var sel=document.getElementById('sel-size');
+  var sizes=['8','9','10','11','12','14','16','18','20','22','24','26','28','32','36','40','48','56','64','72','96'];
+  var cur=parseInt(sel.value)||14;
+  var idx=sizes.findIndex(function(s){return parseInt(s)===cur;});
+  var ni=Math.max(0,Math.min(sizes.length-1,(idx<0?3:idx)+dir));
+  sel.value=sizes[ni];
+  document.execCommand('fontSize',false,'3');
+  editor.focus();
+}
+
+function changeCase(type){
+  var sel=window.getSelection();
+  if(!sel||sel.isCollapsed) return;
+  var t=sel.toString(), r;
+  if(type==='upper') r=t.toUpperCase();
+  else if(type==='lower') r=t.toLowerCase();
+  else if(type==='title') r=t.replace(/\b\w/g,function(c){return c.toUpperCase();});
+  else if(type==='sentence') r=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase();
+  else r=t.split('').map(function(c){return c===c.toUpperCase()?c.toLowerCase():c.toUpperCase();}).join('');
+  document.execCommand('insertText',false,r);
+}
+
+function sortLines(dir){
+  var sel=window.getSelection();
+  var txt=sel&&!sel.isCollapsed?sel.toString():editor.innerText;
+  var lines=txt.split('\n').filter(function(l){return l.trim();});
+  lines.sort(function(a,b){return dir==='asc'?a.localeCompare(b):b.localeCompare(a);});
+  if(sel&&!sel.isCollapsed) document.execCommand('insertText',false,lines.join('\n'));
+  else editor.innerText=lines.join('\n');
+}
+
+/* ── SYNC RIBBON ──────────────────────────────────────────────────── */
+function tog(id,on){ var el=document.getElementById(id); if(el) el.classList.toggle('on',!!on); }
+function syncR(){
+  try{
+    tog('rb-b', document.queryCommandState('bold'));
+    tog('rb-i', document.queryCommandState('italic'));
+    tog('rb-u', document.queryCommandState('underline'));
+    tog('rb-s', document.queryCommandState('strikeThrough'));
+  }catch(e){}
+}
+document.addEventListener('selectionchange', syncR);
+
+/* ── STATS ────────────────────────────────────────────────────────── */
+function updStats(){
+  var txt=(editor.innerText||'').trim();
+  var w=txt?txt.split(/\s+/).filter(Boolean).length:0;
+  var ch=(editor.innerText||'').length;
+  document.getElementById('st-w').textContent='Words: '+w;
+  document.getElementById('st-c').textContent='Chars: '+ch;
+  var ph=1056, eh=document.getElementById('editor').scrollHeight;
+  document.getElementById('st-p').textContent='Pg '+(Math.ceil(eh/ph)||1);
+  var sel=null;try{var _s=window.getSelection();if(_s&&_s.rangeCount&&editor.contains(_s.anchorNode))sel=true;}catch(e){}
+  if(sel){ var b=(window.getSelection().getRangeAt(0).startContainer.textContent||'').slice(0,window.getSelection().getRangeAt(0).startOffset), lns=(editor.innerText.slice(0,editor.innerText.length)||'p').split('\n');
+    document.getElementById('st-pos').textContent='Ln '+lns.length+', Col '+(lns[lns.length-1].length+1); }
+}
+editor.addEventListener('input', updStats); updStats();
+
+(function clk(){
+  var d=new Date(), p=n=>String(n).padStart(2,'0');
+  document.getElementById('st-t').textContent=p(d.getHours())+':'+p(d.getMinutes());
+  setTimeout(clk,20000);
+})();
+
+/* ── AUTOSAVE ─────────────────────────────────────────────────────── */
+var _st, DOC='jarvis-docs-v3', _props={author:'',subject:'',keywords:''};
+function markDirty(){ document.getElementById('savedot').className='dirty'; document.getElementById('savelbl').textContent='UNSAVED'; clearTimeout(_st); _st=setTimeout(doSave,18000); }
+function doSave(){
+  var data={title:document.getElementById('doctitle').value.trim()||'Untitled',html:editor.innerHTML,props:_props,ts:Date.now()};
+  localStorage.setItem(DOC,JSON.stringify(data));
+  document.getElementById('savedot').className=''; document.getElementById('savelbl').textContent='SAVED';
+}
+function saveDoc(){ doSave(); }
+editor.addEventListener('input', markDirty);
+document.getElementById('doctitle').addEventListener('input', markDirty);
+
+(function(){
+  try{ var raw=localStorage.getItem(DOC); if(!raw) return;
+    var d=JSON.parse(raw);
+    if(d.title) document.getElementById('doctitle').value=d.title;
+    if(d.html){ editor.innerHTML=d.html; updStats(); }
+    if(d.props) _props=d.props;
+  }catch(e){}
+})();
+
+/* ── FILE OPS ─────────────────────────────────────────────────────── */
+function newDoc(){ if(!confirm('Start a new document? Unsaved changes will be lost.')) return; editor.innerHTML=''; document.getElementById('doctitle').value='Untitled Document'; updStats(); doSave(); }
+function openDoc(){ document.getElementById('file-in').click(); }
+function loadFile(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    document.getElementById('doctitle').value=f.name.replace(/\.[^.]+$/,'');
+    if(f.name.endsWith('.html')){ var d=new DOMParser().parseFromString(ev.target.result,'text/html'); editor.innerHTML=d.body.innerHTML; }
+    else editor.innerText=ev.target.result;
+    updStats();
+  }; r.readAsText(f); e.target.value='';
+}
+
+/* ── EXPORT ───────────────────────────────────────────────────────── */
+function showExport(){ openO('mo-exp'); }
+function doExport(t){
+  closeO('mo-exp');
+  var title=document.getElementById('doctitle').value.trim()||'document';
+  var html=editor.innerHTML; var a=document.createElement('a');
+  if(t==='html'){
+    var full='<!DOCTYPE html>\n<html>\n<head><meta charset="utf-8"><title>'+title+'</title>'
+      +'<style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.75;color:#111;}</style>'
+      +'</head>\n<body>\n'+html+'\n</body>\n</html>';
+    a.href=URL.createObjectURL(new Blob([full],{type:'text/html'})); a.download=title+'.html';
+  } else if(t==='txt'){
+    a.href=URL.createObjectURL(new Blob([editor.innerText],{type:'text/plain'})); a.download=title+'.txt';
+  } else {
+    var md=html.replace(/<h1[^>]*>(.*?)<\/h1>/gi,'# $1\n\n').replace(/<h2[^>]*>(.*?)<\/h2>/gi,'## $1\n\n')
+      .replace(/<h3[^>]*>(.*?)<\/h3>/gi,'### $1\n\n').replace(/<strong[^>]*>(.*?)<\/strong>/gi,'**$1**')
+      .replace(/<em[^>]*>(.*?)<\/em>/gi,'*$1*').replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi,'[$2]($1)')
+      .replace(/<li[^>]*>(.*?)<\/li>/gi,'- $1\n').replace(/<p[^>]*>(.*?)<\/p>/gi,'$1\n\n')
+      .replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')
+      .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+    a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'})); a.download=title+'.md';
+  }
+  a.click();
+}
+
+/* ── INSERT HELPERS ───────────────────────────────────────────────── */
+var _lr=null;
+function openLink(){ _lr=window.getSelection(); var s=_lr&&!_lr.isCollapsed?_lr.toString():''; document.getElementById('lnk-txt').value=s; document.getElementById('lnk-url').value='https://'; openO('mo-link'); setTimeout(()=>document.getElementById('lnk-url').focus(),80); }
+function doLink(){ var url=document.getElementById('lnk-url').value.trim(); if(!url){closeO('mo-link');return;} var txt=document.getElementById('lnk-txt').value.trim()||url; closeO('mo-link'); editor.focus(); if(_lr&&!_lr.isCollapsed){_lr.deleteContents();var a=document.createElement('a');a.href=url;a.textContent=txt;_lr.insertNode(a);}else{document.execCommand('createLink',false,url);} }
+function embedImg(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(ev){editor.focus();document.execCommand('insertHTML',false,'<img src="'+ev.target.result+'" style="max-width:100%">'); }; r.readAsDataURL(f); e.target.value=''; }
+function insPageBreak(){ editor.focus(); document.execCommand('insertHTML',false,'<hr style="page-break-after:always;border:none">'); }
+function insDate(){ var d=new Date(); var s=d.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); editor.focus(); document.execCommand('insertText',false,s); }
+function insPageNum(){ editor.focus(); document.execCommand('insertText',false,'[Page 1]'); }
+function insHRule(){ editor.focus(); document.execCommand('insertHTML',false,'<hr>'); }
+function insShape(){ var shapes=['◆','▲','▼','◀','▶','⬟','⬡','★','●','■']; editor.focus(); document.execCommand('insertText',false,shapes[Math.floor(Math.random()*shapes.length)]); }
+
+var _hf={hdr:false,ftr:false};
+function toggleHF(which){
+  if(!which){ which=_hf.hdr?'hdr':'ftr'; }
+  _hf[which]=!_hf[which];
+  document.getElementById('pg-'+(which==='hdr'?'hdr':'ftr')).style.display=_hf[which]?'block':'none';
+  tog('rb-hf',_hf.hdr||_hf.ftr);
+}
+
+/* ── SYMBOL PICKER ────────────────────────────────────────────────── */
+var SYMS=['©','®','™','°','±','×','÷','≤','≥','≠','≈','∞','∑','√','π','µ',
+  'α','β','γ','δ','ε','θ','λ','σ','φ','ψ','ω','Ω','→','←','↑','↓','↔','⇒','⇐','⇔',
+  '“','”','‘','’','…','—','–','•','‣','·','§','¶','★','☆','◆','♣','♠','♥','✓','✗','✔','✘','☐','☑'];
+(function(){var g=document.getElementById('sym-grid');SYMS.forEach(function(s){var b=document.createElement('div');b.className='sym';b.textContent=s;b.title=s;b.onclick=function(){editor.focus(); document.execCommand('insertText',false,s);closeO('mo-sym');};g.appendChild(b);});})();
+function openSymbol(){ openO('mo-sym'); }
+
+/* ── TABLE PICKER ─────────────────────────────────────────────────── */
+var _tr=0,_tc=0;
+(function(){var g=document.getElementById('tpk-g');for(var r=1;r<=6;r++)for(var c=1;c<=8;c++){var d=document.createElement('div');d.className='tc';d.dataset.r=r;d.dataset.c=c;d.onmouseenter=function(){_tr=+this.dataset.r;_tc=+this.dataset.c;document.getElementById('tpk-lbl').textContent=_tr+' × '+_tc;document.querySelectorAll('.tc').forEach(function(el){el.classList.toggle('on',+el.dataset.r<=_tr&&+el.dataset.c<=_tc);});};d.onclick=function(){insTbl(_tr,_tc);document.getElementById('tpk').classList.remove('open');};g.appendChild(d);}})();
+function openTpk(e){var t=document.getElementById('tpk');if(t.classList.contains('open')){t.classList.remove('open');return;}var r=e.currentTarget.getBoundingClientRect();t.style.left=r.left+'px';t.style.top=(r.bottom+6)+'px';t.classList.add('open');e.stopPropagation();}
+document.addEventListener('click',function(){document.getElementById('tpk').classList.remove('open');});
+function insTbl(rows,cols){var h='<table style="border-collapse:collapse;width:100%">';for(var r=0;r<rows;r++){h+='<tr>';for(var c=0;c<cols;c++){var s='border:1px solid #ccc;padding:6px 10px;min-width:60px;';h+=r===0?'<th style="'+s+'background:#f0f0f0">&nbsp;</th>':'<td style="'+s+'">&nbsp;</td>';}h+='</tr>';}h+='</table><br>';editor.focus();document.execCommand('insertHTML',false,h);}
+
+/* ── FIND & REPLACE ───────────────────────────────────────────────── */
+var _fbM=[],_fbI=-1;
+function toggleFind(withR){ var fb=document.getElementById('fbar');fb.classList.toggle('open');if(fb.classList.contains('open')){if(withR) document.getElementById('fb-r').focus(); else document.getElementById('fb-q').focus();} }
+function fbScan(){ var q=document.getElementById('fb-q').value;_fbM=[];_fbI=-1;document.getElementById('fb-st').textContent='';if(!q)return;var txt=editor.innerText,lq=q.toLowerCase(),lo=txt.toLowerCase(),idx=0;while((idx=lo.indexOf(lq,idx))!==-1){_fbM.push(idx);idx++;}document.getElementById('fb-st').textContent=_fbM.length+' match'+(_fbM.length!==1?'es':''); }
+function fbStep(d){ if(!_fbM.length)return;_fbI=(_fbI+d+_fbM.length)%_fbM.length;document.getElementById('fb-st').textContent='Match '+(_fbI+1)+' of '+_fbM.length; }
+function fbOne(){ var q=document.getElementById('fb-q').value,rep=document.getElementById('fb-r').value;if(!q)return;document.execCommand('insertText',false,rep);fbScan(); }
+function fbAll(){ var q=document.getElementById('fb-q').value,rep=document.getElementById('fb-r').value;if(!q)return;var cnt=0,h=editor.innerHTML,re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');editor.innerHTML=h.replace(re,function(m){cnt++;return rep;});document.getElementById('fb-st').textContent=cnt+' replacement'+(cnt!==1?'s':'')+' made'; }
+
+/* ── PAGE SETUP ───────────────────────────────────────────────────── */
+var _margins={normal:'48px 80px',narrow:'36px 48px',wide:'48px 120px',none:'20px 20px'};
+function setMargins(t){ editor.style.padding=_margins[t]||_margins.normal; }
+var _pages={a4:{w:794,h:1123},letter:{w:816,h:1056},legal:{w:816,h:1344},a3:{w:1123,h:1587}};
+function setPageSize(t){ var s=_pages[t];if(!s)return;var pg=document.getElementById('page');pg.style.width=s.w+'px';pg.style.minHeight=s.h+'px';editor.style.minHeight=(s.h-96)+'px'; }
+function setOrientation(o){ var pg=document.getElementById('page');var w=parseInt(pg.style.width||816),h=parseInt(pg.style.minHeight||1056);if(o==='landscape'&&w<h){pg.style.width=h+'px';pg.style.minHeight=w+'px';}else if(o==='portrait'&&w>h){pg.style.width=h+'px';pg.style.minHeight=w+'px';}tog('rb-port',o==='portrait');tog('rb-land',o==='landscape'); }
+function setCols(n){ editor.style.columnCount=n>1?n:'';editor.style.columnGap=n>1?'30px':''; }
+function setIndent(){ var l=document.getElementById('ind-l').value||0,r=document.getElementById('ind-r').value||0;editor.style.paddingLeft=(80+parseInt(l))+'px';editor.style.paddingRight=(80+parseInt(r))+'px'; }
+function setLH(v){ editor.style.lineHeight=v; }
+function setParaSpacing(){ var b=document.getElementById('para-b').value,a=document.getElementById('para-a').value;var st=document.getElementById('_pst')||document.createElement('style');st.id='_pst';st.textContent='#editor p{margin-top:'+b+'pt;margin-bottom:'+a+'pt}';if(!st.parentNode)document.head.appendChild(st); }
+function applyTheme(t){ var th={default:{pg:'#fcfaf9',tx:'#2c1d18'},minimal:{pg:'#ffffff',tx:'#1a1a1a'},classic:{pg:'#fffef5',tx:'#1a1208'},modern:{pg:'#faf5f4',tx:'#26130d'},dark:{pg:'#2e1f1a',tx:'#ffe7e0'}}[t]||{pg:'#fcfaf9',tx:'#2c1d18'};document.getElementById('page').style.background=th.pg;editor.style.color=th.tx; }
+function toggleBorder(){ var pg=document.getElementById('page');pg.style.border=pg.style.border?'':'2px solid #d43100'; }
+function addWatermark(){ var txt=prompt('Watermark text:','DRAFT');if(!txt)return;var old=document.getElementById('_wm');if(old)old.remove();var d=document.createElement('div');d.id='_wm';d.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:88px;font-weight:700;color:rgba(180,0,0,.08);pointer-events:none;white-space:nowrap;z-index:0;letter-spacing:8px;';d.textContent=txt.toUpperCase();document.getElementById('page').appendChild(d); }
+
+/* ── ZOOM ─────────────────────────────────────────────────────────── */
+var _zoom=100;
+function setZoom(v){ _zoom=Math.max(50,Math.min(200,v));document.getElementById('page').style.transform='scale('+_zoom/100+')';document.getElementById('page').style.transformOrigin='top center';document.getElementById('zoomval').textContent=_zoom+'%';document.getElementById('st-z').textContent=_zoom+'%'; }
+function fitPage(){ var aw=document.getElementById('earea').clientWidth-80;var pw=parseInt(document.getElementById('page').style.width||816);setZoom(Math.floor(aw/pw*100)); }
+
+/* ── WORD COUNT ───────────────────────────────────────────────────── */
+function showWC(){ var txt=editor.innerText;var w=txt.trim()?txt.trim().split(/\s+/).filter(Boolean).length:0;var ch=txt.length;var chns=txt.replace(/\s/g,'').length;var pa=editor.querySelectorAll('p,h1,h2,h3,h4').length||txt.split('\n').filter(function(l){return l.trim();}).length;var ln=txt.split('\n').length;document.getElementById('wc-grid').innerHTML='<div class="wci"><div class="wcv">'+w+'</div><div class="wck">WORDS</div></div><div class="wci"><div class="wcv">'+ch+'</div><div class="wck">CHARACTERS</div></div><div class="wci"><div class="wcv">'+chns+'</div><div class="wck">CHARS (NO SPACES)</div></div><div class="wci"><div class="wcv">'+pa+'</div><div class="wck">PARAGRAPHS</div></div><div class="wci"><div class="wcv">'+ln+'</div><div class="wck">LINES</div></div><div class="wci"><div class="wcv">'+Math.ceil(w/250)+'</div><div class="wck">EST. READ (MIN)</div></div>';openO('mo-wc'); }
+function checkSpell(){ alert('Tip: Enable browser spell-check (right-click > enable spell check) for inline suggestions. This app uses the browser\'s built-in spell-checking.'); }
+function gotoLine(){ var ln=parseInt(prompt('Go to line:'));if(!ln)return;var lines=editor.querySelectorAll('p,div,br');var target=lines[Math.min(ln-1,lines.length-1)];if(target){target.scrollIntoView({block:'center'});}editor.focus(); }
+
+/* ── DOC PROPS ────────────────────────────────────────────────────── */
+function showDocProps(){ document.getElementById('pr-title').value=document.getElementById('doctitle').value;document.getElementById('pr-author').value=_props.author||'';document.getElementById('pr-subj').value=_props.subject||'';document.getElementById('pr-kw').value=_props.keywords||'';openO('mo-props'); }
+function saveProps(){ document.getElementById('doctitle').value=document.getElementById('pr-title').value;_props.author=document.getElementById('pr-author').value;_props.subject=document.getElementById('pr-subj').value;_props.keywords=document.getElementById('pr-kw').value;closeO('mo-props');markDirty(); }
+
+/* ── VIEW TOGGLES ─────────────────────────────────────────────────── */
+function toggleGrid(){ var ea=document.getElementById('earea');var has=ea.dataset.grid==='1';ea.dataset.grid=has?'':'1';ea.style.backgroundImage=has?'radial-gradient(circle,rgba(255,60,0,.048) 1px,transparent 1px)':'linear-gradient(rgba(255,60,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,60,0,.04) 1px,transparent 1px)';ea.style.backgroundSize=has?'30px 30px':'20px 20px';tog('rb-grid',!has); }
+function toggleFS(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen(); }
+
+/* ── MENU SYSTEM ──────────────────────────────────────────────────── */
+var _om=null;
+function tmenu(id){ var dd=document.getElementById('dd-'+id);var btn=dd.previousElementSibling;if(_om&&_om!==id){document.getElementById('dd-'+_om).classList.remove('open');document.querySelector('.mbtn.open').classList.remove('open');}if(dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('open');_om=null;return;}var rect=btn.getBoundingClientRect();dd.style.left=rect.left+'px';dd.classList.add('open');btn.classList.add('open');_om=id; }
+document.addEventListener('click',function(e){ if(!e.target.closest('.mwrap')&&_om){document.getElementById('dd-'+_om).classList.remove('open');var b=document.querySelector('.mbtn.open');if(b)b.classList.remove('open');_om=null;}document.getElementById('ctxm').classList.remove('open'); });
+
+/* ── RIBBON TABS ──────────────────────────────────────────────────── */
+function switchTab(t){ document.querySelectorAll('.rtab').forEach(function(b){b.classList.toggle('act',b.dataset.t===t);});document.querySelectorAll('.rp').forEach(function(p){p.classList.toggle('act',p.id==='rp-'+t);}); }
+
+/* ── KEYBOARD SHORTCUTS ───────────────────────────────────────────── */
+document.addEventListener('keydown',function(e){
+  var m=e.ctrlKey||e.metaKey;
+  if(m&&e.key==='s'){e.preventDefault();saveDoc();}
+  if(m&&e.key==='f'){e.preventDefault();toggleFind();}
+  if(m&&e.key==='h'){e.preventDefault();toggleFind(true);}
+  if(m&&e.key==='k'){e.preventDefault();openLink();}
+  if(m&&e.key==='p'){e.preventDefault();window.print();}
+  if(m&&e.key==='n'){e.preventDefault();newDoc();}
+  if(m&&e.key==='o'){e.preventDefault();openDoc();}
+  if(m&&e.key===' '){e.preventDefault();togglePanel();}
+  if(m&&e.key==='\\'){e.preventDefault();clearFmt();}
+  if(e.key==='Escape'){
+    document.getElementById('fbar').classList.remove('open');
+    document.querySelectorAll('.ovl.open').forEach(x=>x.classList.remove('open'));
+    document.getElementById('ctxm').classList.remove('open');
+    if(_om){document.getElementById('dd-'+_om).classList.remove('open');_om=null;}
+  }
+});
+
+/* ── PANEL ────────────────────────────────────────────────────────── */
+function togglePanel(){ var p=document.getElementById('jpanel');var b=document.getElementById('btn-jp');p.classList.toggle('open');b.classList.toggle('on');if(p.classList.contains('open'))setTimeout(function(){document.getElementById('jp-inp').focus();},280); }
+
+/* ── ASK JARVIS ───────────────────────────────────────────────────── */
+var _hist=[],SR=window.SpeechRecognition||window.webkitSpeechRecognition,_rec=SR?new SR():null;
+if(_rec){_rec.lang='en-GB';_rec.continuous=false;_rec.interimResults=false;}
+function addMsg(role,text){var b=document.getElementById('jp-msgs');var d=document.createElement('div');d.className='jm '+role;d.innerHTML='<span class="jm-who">'+(role==='u'?'YOU':'ULTRON')+'</span><div class="jm-bub">'+String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';b.appendChild(d);b.scrollTop=b.scrollHeight;}
+function showTyp(){var b=document.getElementById('jp-msgs');var d=document.createElement('div');d.className='jm b';d.id='jp-typ';d.innerHTML='<span class="jm-who">ULTRON</span><div class="jm-bub"><div class="jm-dots"><span></span><span></span><span></span></div></div>';b.appendChild(d);b.scrollTop=b.scrollHeight;return d;}
+function speak(t){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.slice(0,260));u.lang='en-GB';u.rate=0.9;u.pitch=0.82;var vs=window.speechSynthesis.getVoices();var gb=vs.find(v=>v.lang==='en-GB')||vs.find(v=>v.lang.startsWith('en'));if(gb)u.voice=gb;window.speechSynthesis.speak(u);}
+function execAct(a){if(!a)return;try{if(a.type==='insert'){editor.focus(); document.execCommand('insertHTML',false,a.text||'');}else if(a.type==='replace'){editor.innerHTML=a.text||'';setPageSize('a4');tog('rb-port',true);tog('rb-land',false);}else if(a.type==='append'){editor.focus(); document.execCommand('insertHTML',false,a.text||'');}else if(a.type==='new'){editor.innerHTML='';document.getElementById('doctitle').value='Untitled Document';updStats();doSave();setPageSize('a4');tog('rb-port',true);tog('rb-land',false);editor.focus();if(a.text)document.execCommand('insertHTML',false,a.text);}else if(a.type==='format'&&a.format){}}catch(ex){}}
+async function sendMsg(){var inp=document.getElementById('jp-inp');var msg=inp.value.trim();if(!msg)return;inp.value='';addMsg('u',msg);_hist.push({role:'user',content:msg});var typ=showTyp();try{var res=await fetch('http://127.0.0.1:5000/jarvis-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,context:editor.innerText.slice(0,3000),doc_title:document.getElementById('doctitle').value,app:'docs',history:_hist.slice(-8)})});var data=await res.json();typ.remove();var reply=data.response||'No response.';addMsg('b',reply);_hist.push({role:'assistant',content:reply});speak(reply);if(data.action)execAct(data.action);}catch(err){typ.remove();addMsg('b','ULTRON offline — Flask server not reachable. Connect the Pi backend to enable AI assistance.');}}
+document.getElementById('jp-inp').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+function toggleVoice(){if(!_rec){addMsg('b','Voice recognition not supported in this browser.');return;}var btn=document.getElementById('jp-mic');if(btn.classList.contains('rec')){_rec.stop();btn.classList.remove('rec');return;}btn.classList.add('rec');_rec.start();_rec.onresult=function(e){document.getElementById('jp-inp').value=e.results[0][0].transcript;btn.classList.remove('rec');sendMsg();};_rec.onerror=_rec.onend=function(){btn.classList.remove('rec');};}
+
+/* ── MODAL HELPERS ────────────────────────────────────────────────── */
+function openO(id){document.getElementById(id).classList.add('open');}
+function closeO(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.ovl').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});});
+
+/* ── CONTEXT MENU ─────────────────────────────────────────────────── */
+document.getElementById('earea').addEventListener('contextmenu',function(e){e.preventDefault();var c=document.getElementById('ctxm');c.style.left=Math.min(e.clientX,window.innerWidth-165)+'px';c.style.top=Math.min(e.clientY,window.innerHeight-230)+'px';c.classList.add('open');});
+
+/* ── NAVIGATION ───────────────────────────────────────────────────── */
+function goHome(){
+  doSave();
+  if(window.self!==window.top){ window.parent.postMessage({jarvisWindow:'close'},'*'); return; }
+  window.location.href='desktop.html';
+}
+</script>
+</body>
+</html>

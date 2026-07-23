@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ULTRON SETTINGS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;}
+body{background:
+    radial-gradient(circle at 12% 18%, rgba(255,60,0,.30), transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(255,60,0,.26), transparent 45%),
+    linear-gradient(165deg,#1a0803 0%,#280f07 50%,#0f0502 100%);}
+
+#topbar{position:fixed;top:0;left:0;right:0;height:28px;z-index:200;
+  background:rgba(26,8,3,.72);
+  border-bottom:1px solid rgba(255,60,0,.12);
+  display:flex;align-items:center;padding:0 10px;font-size:12px;color:rgba(255,221,210,.88);}
+#tb-logo{font-size:14px;margin-right:10px;
+  background:linear-gradient(90deg,#ff3c00,#ff3c00);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#tb-name{font-weight:800;letter-spacing:1.5px;
+  background:linear-gradient(90deg,#ff8a66,#ff3c00 55%,#ff3c00);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#btn-home{margin-left:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:3px 11px;font-size:10px;letter-spacing:.8px;color:rgba(255,205,190,.8);cursor:pointer;}
+#btn-home:hover{background:rgba(255,255,255,.12);}
+
+#body{position:fixed;top:28px;left:0;right:0;bottom:0;display:flex;}
+#sidebar{width:220px;flex-shrink:0;background:rgba(26,8,3,.55);
+  border-right:1px solid rgba(255,60,0,.1);padding:10px 8px;display:flex;flex-direction:column;}
+#sb-search{margin:4px 4px 10px;padding:7px 10px 7px 30px;border-radius:8px;border:1px solid rgba(255,60,0,.16);
+  background:rgba(0,0,0,.22) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,180,160,0.6)" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;
+  background-size:12px;color:rgba(250,219,210,.9);font-size:11.5px;outline:none;}
+#sb-search::placeholder{color:rgba(225,168,150,.45);}
+#sb-search:focus{border-color:rgba(255,60,0,.42);}
+#sb-list{overflow-y:auto;flex:1;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;
+  font-size:12px;color:rgba(245,203,190,.8);margin-bottom:2px;transition:background .15s;}
+.sb-item:hover{background:rgba(255,60,0,.08);}
+.sb-item.active{background:rgba(255,60,0,.18);color:rgba(255,60,0,.95);}
+.sb-icon{font-size:15px;width:20px;text-align:center;}
+
+#content{flex:1;overflow-y:auto;padding:30px 40px;}
+.pane{display:none;max-width:640px;}
+.pane.active{display:block;}
+.pane h1{font-size:22px;font-weight:800;color:rgba(255,236,230,.97);margin-bottom:20px;}
+.section-label{font-size:10.5px;letter-spacing:1.2px;color:rgba(225,168,150,.55);margin:18px 2px 8px;text-transform:uppercase;}
+.section-label:first-of-type{margin-top:0;}
+.card{background:rgba(255,60,0,.04);border:1px solid rgba(255,60,0,.12);border-radius:14px;
+  padding:18px 20px;margin-bottom:16px;}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;gap:14px;
+  border-bottom:1px solid rgba(255,60,0,.08);}
+.row:last-child{border-bottom:none;}
+.row-label{font-size:12.5px;color:rgba(250,219,210,.9);}
+.row-sub{font-size:10.5px;color:rgba(225,168,150,.55);margin-top:2px;}
+.row-val{font-size:12px;color:rgba(255,175,150,.85);font-weight:600;}
+
+.toggle{width:38px;height:22px;border-radius:11px;background:rgba(255,255,255,.12);
+  position:relative;cursor:pointer;transition:background .18s;flex-shrink:0;}
+.toggle.on{background:linear-gradient(90deg,#ff3c00,#ff3c00);}
+.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:transform .18s;}
+.toggle.on .toggle-knob{transform:translateX(16px);}
+
+.wallpreview{width:100%;height:160px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,60,0,.14);margin-bottom:14px;}
+.wallpreview img{width:100%;height:100%;object-fit:cover;display:block;}
+.btn{padding:8px 18px;border-radius:9px;border:none;background:linear-gradient(120deg,#ff3c00,#ff3c00);
+  color:#1f0902;font-size:11.5px;font-weight:700;cursor:pointer;}
+.btn:hover{box-shadow:0 4px 16px rgba(255,60,0,.4);}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;padding-top:2px;}
+.btn-secondary{padding:8px 16px;border-radius:9px;border:1px solid rgba(255,60,0,.28);
+  background:rgba(255,60,0,.08);color:rgba(255,205,190,.92);font-size:11.5px;font-weight:600;cursor:pointer;}
+.btn-secondary:hover{background:rgba(255,60,0,.16);}
+.btn-danger{padding:8px 16px;border-radius:9px;border:1px solid rgba(255,70,70,.35);
+  background:rgba(255,40,40,.1);color:rgba(255,150,150,.95);font-size:11.5px;font-weight:600;cursor:pointer;}
+.btn-danger:hover{background:rgba(255,40,40,.2);}
+
+.stat-ring{display:flex;gap:20px;}
+.sr-item{flex:1;text-align:center;}
+.sr-pct{font-size:26px;font-weight:800;color:rgba(255,60,0,.95);}
+.sr-label{font-size:9.5px;letter-spacing:1px;color:rgba(225,168,150,.6);margin-top:4px;}
+
+.signal-bars{display:flex;align-items:flex-end;gap:2px;height:14px;}
+.signal-bars i{display:block;width:4px;background:rgba(255,255,255,.15);border-radius:1px;}
+.signal-bars i:nth-child(1){height:35%;} .signal-bars i:nth-child(2){height:55%;}
+.signal-bars i:nth-child(3){height:75%;} .signal-bars i:nth-child(4){height:100%;}
+.signal-bars.lit i{background:#ff3c00;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#3ddc6a;box-shadow:0 0 8px rgba(61,220,106,.7);flex-shrink:0;}
+.status-dot.off{background:rgba(255,255,255,.2);box-shadow:none;}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(26,8,3,.95);border:1px solid rgba(255,60,0,.3);border-radius:10px;
+  padding:9px 18px;font-size:11.5px;color:rgba(255,225,215,.95);opacity:0;transition:opacity .2s,transform .2s;
+  pointer-events:none;z-index:500;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.app-row-icon{font-size:16px;width:22px;text-align:center;}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span id="tb-logo">◈</span>
+  <span id="tb-name">SETTINGS</span>
+  <div id="btn-home" onclick="goHome()">◈ DESKTOP</div>
+</div>
+
+<div id="body">
+  <div id="sidebar">
+    <input id="sb-search" type="text" placeholder="Search" oninput="filterSidebar(this.value)">
+    <div id="sb-list">
+      <div class="sb-item active" data-pane="general" onclick="showPane('general')">
+        <span class="sb-icon">ℹ️</span>General
+      </div>
+      <div class="sb-item" data-pane="network" onclick="showPane('network')">
+        <span class="sb-icon">📶</span>Network
+      </div>
+      <div class="sb-item" data-pane="appearance" onclick="showPane('appearance')">
+        <span class="sb-icon">🎨</span>Appearance
+      </div>
+      <div class="sb-item" data-pane="wallpaper" onclick="showPane('wallpaper')">
+        <span class="sb-icon">🖼️</span>Wallpaper
+      </div>
+      <div class="sb-item" data-pane="dock" onclick="showPane('dock')">
+        <span class="sb-icon">🗂️</span>Dock &amp; Apps
+      </div>
+      <div class="sb-item" data-pane="widgets" onclick="showPane('widgets')">
+        <span class="sb-icon">▦</span>Widgets
+      </div>
+      <div class="sb-item" data-pane="ai" onclick="showPane('ai')">
+        <span class="sb-icon">✨</span>JARVIS AI
+      </div>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- General -->
+    <div class="pane active" id="pane-general">
+      <h1>General</h1>
+      <div class="section-label">About</div>
+      <div class="card">
+        <div class="row"><span class="row-label">Device Name</span><span class="row-val">ULTRON OS</span></div>
+        <div class="row"><span class="row-label">Platform</span><span class="row-val" id="g-model">Raspberry Pi 5</span></div>
+        <div class="row"><span class="row-label">OS</span><span class="row-val" id="g-os">–</span></div>
+        <div class="row"><span class="row-label">Uptime</span><span class="row-val" id="g-uptime">–</span></div>
+      </div>
+      <div class="section-label">Storage &amp; Memory</div>
+      <div class="card">
+        <div class="stat-ring">
+          <div class="sr-item"><div class="sr-pct" id="g-cpu">–</div><div class="sr-label">CPU</div></div>
+          <div class="sr-item"><div class="sr-pct" id="g-ram">–</div><div class="sr-label">RAM</div></div>
+          <div class="sr-item"><div class="sr-pct" id="g-disk">–</div><div class="sr-label">DISK</div></div>
+        </div>
+        <div class="row" style="border-top:1px solid rgba(255,60,0,.08);margin-top:14px;padding-top:12px;">
+          <span class="row-label">Free Space</span><span class="row-val" id="g-disk-free">–</span>
+        </div>
+      </div>
+      <div class="section-label">Power</div>
+      <div class="card">
+        <div class="row">
+          <div><div class="row-label">Restart Display</div><div class="row-sub">Restarts the kiosk compositor &amp; UI</div></div>
+          <div class="btn-secondary" onclick="powerAction('restart-display','Restart the display? The screen will go black briefly.')">Restart</div>
+        </div>
+        <div class="row">
+          <div><div class="row-label">Restart JARVIS Service</div><div class="row-sub">Restarts the Flask backend only</div></div>
+          <div class="btn-secondary" onclick="powerAction('restart-jarvis','Restart the JARVIS backend service?')">Restart</div>
+        </div>
+        <div class="row">
+          <div><div class="row-label">Reboot</div><div class="row-sub">Restarts the entire device</div></div>
+          <div class="btn-danger" onclick="powerAction('reboot','Reboot the whole device now?')">Reboot</div>
+        </div>
+        <div class="row">
+          <div><div class="row-label">Shut Down</div><div class="row-sub">Powers the device off completely</div></div>
+          <div class="btn-danger" onclick="powerAction('shutdown','Shut down the device? You will need physical access to turn it back on.')">Shut Down</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network -->
+    <div class="pane" id="pane-network">
+      <h1>Network</h1>
+      <div class="card">
+        <div class="row">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="status-dot" id="net-dot"></span>
+            <div><div class="row-label" id="net-ssid">–</div><div class="row-sub">Wi-Fi Network</div></div>
+          </div>
+          <div class="signal-bars" id="net-bars"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="row"><span class="row-label">IP Address</span><span class="row-val" id="net-ip">–</span></div>
+        <div class="row"><span class="row-label">Signal</span><span class="row-val" id="net-signal">–</span></div>
+      </div>
+      <div class="btn-row">
+        <div class="btn-secondary" onclick="loadNetwork()">Refresh</div>
+      </div>
+    </div>
+
+    <!-- Appearance -->
+    <div class="pane" id="pane-appearance">
+      <h1>Appearance</h1>
+      <div class="card">
+        <div class="row"><span class="row-label">Theme</span><span class="row-val">ULTRON Ember</span></div>
+        <div class="row"><span class="row-label">Accent Color</span>
+          <span class="row-val" style="display:flex;align-items:center;gap:6px;">
+            <span style="width:12px;height:12px;border-radius:50%;background:#ff3c00;display:inline-block;"></span>#FF3C00
+          </span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <div><div class="row-label">Background Effects</div><div class="row-sub">Aurora glow &amp; ambient particles on the desktop</div></div>
+          <div class="toggle" id="tog-effects" onclick="toggleSetting('bgEffects')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallpaper -->
+    <div class="pane" id="pane-wallpaper">
+      <h1>Wallpaper</h1>
+      <div class="card">
+        <div class="wallpreview"><img id="wp-preview" onerror="this.style.display='none'"></div>
+        <button class="btn" onclick="openWallpapers()">Open Wallpapers</button>
+      </div>
+    </div>
+
+    <!-- Dock & Apps -->
+    <div class="pane" id="pane-dock">
+      <h1>Dock &amp; Apps</h1>
+      <div class="card" id="dock-list">
+        <div class="row-sub" style="padding:6px 0;">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Widgets -->
+    <div class="pane" id="pane-widgets">
+      <h1>Widgets</h1>
+      <div class="card">
+        <div class="row">
+          <div><div class="row-label">Clock</div><div class="row-sub">Top-left time &amp; date</div></div>
+          <div class="toggle" id="tog-clock" onclick="toggleWidget('clock')"><div class="toggle-knob"></div></div>
+        </div>
+        <div class="row">
+          <div><div class="row-label">Weather</div><div class="row-sub">Top-right conditions</div></div>
+          <div class="toggle" id="tog-weather" onclick="toggleWidget('weather')"><div class="toggle-knob"></div></div>
+        </div>
+        <div class="row">
+          <div><div class="row-label">Calendar</div><div class="row-sub">Bottom-left upcoming events</div></div>
+          <div class="toggle" id="tog-cal" onclick="toggleWidget('cal')"><div class="toggle-knob"></div></div>
+        </div>
+        <div class="row">
+          <div><div class="row-label">System Stats</div><div class="row-sub">Bottom-right CPU/RAM/disk</div></div>
+          <div class="toggle" id="tog-stats" onclick="toggleWidget('stats')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JARVIS AI -->
+    <div class="pane" id="pane-ai">
+      <h1>JARVIS AI</h1>
+      <div class="card">
+        <div class="row"><span class="row-label">Model</span><span class="row-val" id="ai-model">–</span></div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <div><div class="row-label">Emotion Reactions</div><div class="row-sub">The desktop face reacts to JARVIS's tone when you ask something</div></div>
+          <div class="toggle" id="tog-emotion" onclick="toggleSetting('emotionReactions')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API='http://127.0.0.1:5000';
+var VIS_KEY='jarvis_widget_visibility';
+var SETTINGS_KEY='jarvis_settings';
+
+function showPane(name){
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.sb-item').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('pane-'+name).classList.add('active');
+  var item=document.querySelector('.sb-item[data-pane="'+name+'"]');
+  if(item) item.classList.add('active');
+  if(name==='network') loadNetwork();
+  if(name==='dock') loadDockSettings();
+}
+
+function filterSidebar(q){
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('.sb-item').forEach(function(item){
+    var text=item.textContent.trim().toLowerCase();
+    item.style.display = (!q || text.indexOf(q)!==-1) ? 'flex' : 'none';
+  });
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); },2600);
+}
+
+/* ── Generic settings (localStorage, consumed by desktop.html) ── */
+function loadSettings(){
+  var s={};
+  try{ s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'); }catch(e){}
+  return s;
+}
+function toggleSetting(key){
+  var s=loadSettings();
+  var newVal = s[key]===false ? true : false;
+  s[key]=newVal;
+  try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){}
+  applySettingsToggles();
+}
+function applySettingsToggles(){
+  var s=loadSettings();
+  document.getElementById('tog-effects').classList.toggle('on', s.bgEffects!==false);
+  document.getElementById('tog-emotion').classList.toggle('on', s.emotionReactions!==false);
+}
+
+/* ── General ── */
+function loadSysinfo(){
+  fetch(API+'/api/sysinfo').then(function(r){return r.json();}).then(function(d){
+    document.getElementById('g-cpu').textContent=(d.cpu_pct||0)+'%';
+    document.getElementById('g-ram').textContent=(d.mem_pct||0)+'%';
+    document.getElementById('g-disk').textContent=(d.disk_pct||0)+'%';
+    document.getElementById('g-disk-free').textContent=(d.disk_free_gb||0)+' GB of '+(d.disk_total_gb||0)+' GB free';
+    document.getElementById('g-os').textContent=d.os||'–';
+    document.getElementById('g-uptime').textContent=d.uptime_str||'–';
+  }).catch(function(){});
+}
+
+function powerAction(action, confirmMsg){
+  if(!confirm(confirmMsg)) return;
+  showToast('Working…');
+  fetch(API+'/api/settings/power',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:action})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error){ showToast('Failed: '+d.error); return; }
+    showToast('Done.');
+  }).catch(function(){ showToast('Request failed — device may already be restarting.'); });
+}
+
+/* ── Network ── */
+function loadNetwork(){
+  fetch(API+'/api/settings/network').then(function(r){return r.json();}).then(function(d){
+    var connected = !!d.ssid;
+    document.getElementById('net-dot').classList.toggle('off', !connected);
+    document.getElementById('net-ssid').textContent = d.ssid || 'Not Connected';
+    document.getElementById('net-ip').textContent = d.ip || '–';
+    var sig = parseInt(d.signal,10);
+    document.getElementById('net-signal').textContent = isNaN(sig) ? '–' : sig+'%';
+    var bars = document.getElementById('net-bars');
+    bars.classList.toggle('lit', connected);
+  }).catch(function(){});
+}
+
+/* ── Widgets ── */
+function loadWidgetVisibility(){
+  var vis={};
+  try{ vis=JSON.parse(localStorage.getItem(VIS_KEY)||'{}'); }catch(e){}
+  ['clock','weather','cal','stats'].forEach(function(k){
+    var on = vis[k]!==false;
+    document.getElementById('tog-'+k).classList.toggle('on',on);
+  });
+}
+function toggleWidget(key){
+  var vis={};
+  try{ vis=JSON.parse(localStorage.getItem(VIS_KEY)||'{}'); }catch(e){}
+  var newVal = vis[key]===false ? true : false;
+  vis[key]=newVal;
+  try{ localStorage.setItem(VIS_KEY, JSON.stringify(vis)); }catch(e){}
+  document.getElementById('tog-'+key).classList.toggle('on',newVal);
+}
+
+/* ── Dock & Apps ── */
+function loadDockSettings(){
+  fetch(API+'/api/settings/dock').then(function(r){return r.json();}).then(function(apps){
+    var wrap=document.getElementById('dock-list');
+    wrap.innerHTML='';
+    apps.forEach(function(a,i){
+      var row=document.createElement('div');
+      row.className='row';
+      row.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;">'+
+          '<span class="app-row-icon">'+(a.icon||'▪️')+'</span>'+
+          '<span class="row-label">'+a.name+'</span>'+
+        '</div>'+
+        '<div class="toggle'+(a.enabled!==false?' on':'')+'" data-idx="'+i+'"></div>';
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll('.toggle').forEach(function(t){
+      t.addEventListener('click',function(){
+        var idx=parseInt(t.getAttribute('data-idx'),10);
+        apps[idx].enabled = apps[idx].enabled===false ? true : false;
+        t.classList.toggle('on', apps[idx].enabled);
+        fetch(API+'/api/settings/dock',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({apps:apps})
+        }).then(function(){ showToast('Dock updated.'); }).catch(function(){});
+      });
+    });
+  }).catch(function(){
+    document.getElementById('dock-list').innerHTML='<div class="row-sub">Could not load dock config.</div>';
+  });
+}
+
+/* ── JARVIS AI ── */
+function loadAiInfo(){
+  fetch(API+'/api/settings/ai').then(function(r){return r.json();}).then(function(d){
+    document.getElementById('ai-model').textContent = d.model || '–';
+  }).catch(function(){});
+}
+
+function openWallpapers(){
+  if(window.self!==window.top){ window.parent.postMessage({jarvisWindow:'launch',app:'Wallpapers'},'*'); return; }
+  window.location.href='wallpapers.html';
+}
+function goHome(){
+  if(window.self!==window.top){ window.parent.postMessage({jarvisWindow:'close'},'*'); return; }
+  window.location.href='desktop.html';
+}
+
+document.getElementById('wp-preview').src='current_wallpaper.jpg?t='+Date.now();
+loadSysinfo();
+loadWidgetVisibility();
+applySettingsToggles();
+loadAiInfo();
+</script>
+</body>
+</html>

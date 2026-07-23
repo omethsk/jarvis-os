@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ULTRON</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#180601;
+  font-family:system-ui,-apple-system,'Helvetica Neue',sans-serif;}
+
+/* Dot grid */
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(255,60,0,.15) 1px,transparent 1px);
+  background-size:38px 38px;pointer-events:none;z-index:0;
+}
+/* Vignette */
+body::after{
+  content:"";position:fixed;inset:0;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(9,3,1,.85) 100%);
+  pointer-events:none;z-index:0;
+}
+
+/* Scanline */
+@keyframes scanline{
+  0%{transform:translateY(-100%);}
+  100%{transform:translateY(100vh);}
+}
+#scanline{
+  position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+}
+#scanline::after{
+  content:"";position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(transparent,rgba(255,60,0,.06),transparent);
+  animation:scanline 6s linear infinite;
+}
+
+/* Corner brackets */
+.corner{position:fixed;width:28px;height:28px;z-index:10;opacity:.35;}
+.corner.tl{top:16px;left:16px;border-top:1.5px solid rgba(255,60,0,.7);border-left:1.5px solid rgba(255,60,0,.7);}
+.corner.tr{top:16px;right:16px;border-top:1.5px solid rgba(255,60,0,.7);border-right:1.5px solid rgba(255,60,0,.7);}
+.corner.bl{bottom:16px;left:16px;border-bottom:1.5px solid rgba(255,60,0,.7);border-left:1.5px solid rgba(255,60,0,.7);}
+.corner.br{bottom:16px;right:16px;border-bottom:1.5px solid rgba(255,60,0,.7);border-right:1.5px solid rgba(255,60,0,.7);}
+
+/* Center stage */
+#stage{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:5;
+}
+
+/* Face mount */
+#face-mount{width:340px;height:340px;}
+
+/* JARVIS title */
+#title{
+  margin-top:28px;
+  font-size:52px;font-weight:100;letter-spacing:24px;
+  color:rgba(255,213,200,.92);text-transform:uppercase;
+  text-shadow:0 0 40px rgba(255,60,0,.5),0 0 80px rgba(255,60,0,.2);
+}
+#subtitle{
+  margin-top:10px;
+  font-size:9px;letter-spacing:6px;color:rgba(255,60,0,.4);
+  text-transform:uppercase;
+}
+
+/* Boot text */
+#bootlog{
+  position:fixed;bottom:60px;left:50%;transform:translateX(-50%);
+  font-size:10px;letter-spacing:2px;color:rgba(255,60,0,.35);
+  font-family:monospace;text-align:center;z-index:5;
+  min-height:18px;white-space:nowrap;
+}
+
+/* Hint */
+#hint{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  font-size:9px;letter-spacing:3px;color:rgba(255,60,0,.2);
+  text-transform:uppercase;z-index:5;transition:opacity .4s;
+}
+
+/* Unlock flash */
+@keyframes unlock-flash{
+  0%{opacity:0}20%{opacity:1}100%{opacity:0}
+}
+#unlock{
+  position:fixed;inset:0;background:rgba(255,60,0,.08);
+  z-index:20;pointer-events:none;opacity:0;
+}
+#unlock.flash{animation:unlock-flash .5s ease-out forwards;}
+
+/* Particles */
+#particles{position:fixed;inset:0;z-index:2;pointer-events:none;}
+</style>
+</head>
+<body>
+<div id="scanline"></div>
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+<canvas id="particles"></canvas>
+
+<div id="stage">
+  <div id="face-mount"></div>
+
+  <div id="title">U L T R O N</div>
+  <div id="subtitle">Autonomous Global Defense Intelligence</div>
+</div>
+
+<div id="bootlog"></div>
+<div id="hint">Press space to continue</div>
+<div id="unlock"></div>
+
+<script src="jarvis-face.js"></script>
+<script>
+JarvisFace.mount(document.getElementById('face-mount'), {agent: 'edith'});
+
+// ── Particles ────────────────────────────────────────────────────────
+var canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+var pts=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+resize();window.addEventListener('resize',resize);
+for(var i=0;i<80;i++){
+  pts.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    r:Math.random()*.9+.2,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12,
+    o:Math.random()*.5+.1});
+}
+function drawPts(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pts.forEach(function(p){
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,200,255,'+p.o+')';ctx.fill();
+  });
+  requestAnimationFrame(drawPts);
+}
+drawPts();
+
+// ── Boot log ─────────────────────────────────────────────────────────
+var lines=[
+  'INITIALIZING CORE SYSTEMS...',
+  'NEURAL INTERFACE ONLINE',
+  'LOADING PERSONALITY MATRIX...',
+  'THREAT ASSESSMENT: NOMINAL',
+  'ALL SYSTEMS OPERATIONAL',
+  'GOOD DAY, SIR.',
+];
+var li=0,bl=document.getElementById('bootlog');
+function nextLine(){
+  if(li<lines.length){bl.textContent=lines[li++];setTimeout(nextLine,900+Math.random()*400);}
+  else{bl.style.opacity=0;}
+}
+setTimeout(nextLine,600);
+
+// ── Space x10 unlock ─────────────────────────────────────────────────
+var count=0,hint=document.getElementById('hint'),unlock=document.getElementById('unlock');
+document.addEventListener('keydown',function(e){
+  if(e.code==='Space'){
+    e.preventDefault();
+    count++;
+    if(count>=10){
+      unlock.classList.add('flash');
+      setTimeout(function(){window.location.href='desktop.html';},400);
+    } else if(count>=6){
+      hint.style.opacity='0.7';
+      hint.textContent='SPACE × '+(10-count)+' MORE...';
+    }
+  }
+});
+
+// ── Touch: tap 10x ───────────────────────────────────────────────────
+document.addEventListener('click',function(){
+  count++;
+  if(count>=10){
+    unlock.classList.add('flash');
+    setTimeout(function(){window.location.href='desktop.html';},400);
+  } else if(count>=6){
+    hint.style.opacity='0.7';
+    hint.textContent='TAP × '+(10-count)+' MORE...';
+  }
+});
+</script>
+</body>
+</html>
