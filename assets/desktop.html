@@ -80,19 +80,19 @@ body.has-wallpaper::after{
   55%{opacity:.32;}
   100%{opacity:0;}
 }
-.sat-orbit{position:absolute;left:50%;top:50%;width:0;height:0;}
+.sat-orbit{position:absolute;left:50%;top:50%;width:0;height:0;will-change:transform;}
 .sat-orbit-a{animation:sat-spin 20s linear infinite;}
 .sat-orbit-b{animation:sat-spin-rev 25s linear infinite;}
 @keyframes sat-spin{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}
 @keyframes sat-spin-rev{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(-360deg);}}
-.sat-arm{position:absolute;left:0;top:0;}
+.sat-arm{position:absolute;left:0;top:0;will-change:transform;}
 .sat-arm-a{animation:sat-drift-a 7s ease-in-out infinite;}
 .sat-arm-b{animation:sat-drift-b 9s ease-in-out infinite;animation-delay:-3s;}
 @keyframes sat-drift-a{0%,100%{transform:translate(230px,0);}50%{transform:translate(260px,0);}}
 @keyframes sat-drift-b{0%,100%{transform:translate(230px,0);}50%{transform:translate(260px,0);}}
-.sat-counter-a{animation:sat-spin-rev 20s linear infinite;}
-.sat-counter-b{animation:sat-spin 25s linear infinite;}
-.sat-bob{position:relative;}
+.sat-counter-a{animation:sat-spin-rev 20s linear infinite;will-change:transform;}
+.sat-counter-b{animation:sat-spin 25s linear infinite;will-change:transform;}
+.sat-bob{position:relative;will-change:transform;}
 .sat-bob-a{animation:sat-bob-a 3.6s ease-in-out infinite;animation-delay:-1.1s;}
 .sat-bob-b{animation:sat-bob-b 4.3s ease-in-out infinite;animation-delay:-2.7s;}
 @keyframes sat-bob-a{0%,100%{transform:translateY(-12px);}50%{transform:translateY(14px);}}
