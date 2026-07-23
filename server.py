@@ -5,6 +5,8 @@ import threading
 import subprocess
 import requests
 import psutil
+from datetime import datetime
+from icalendar import Calendar
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, Response, send_from_directory
 from flask_cors import CORS
@@ -69,6 +71,7 @@ EMOTION_PROMPT = (
 
 WEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')
 WEATHER_CITY = os.environ.get('WEATHER_CITY', 'London')
+CALENDAR_ICAL_URL = os.environ.get('CALENDAR_ICAL_URL', '')
 
 # ── Serve HTML assets ────────────────────────────────────────────────
 @app.route('/')
@@ -697,10 +700,51 @@ def sysinfo():
         })
 
 # ── Calendar placeholder ──────────────────────────────────────────────
+def _event_start_iso(dtstart_prop):
+    val = dtstart_prop.dt
+    if isinstance(val, datetime):
+        if val.tzinfo is not None:
+            val = val.astimezone().replace(tzinfo=None)
+        return val.isoformat()
+    # date-only (all-day) event â midnight so the frontend renders it as 'ALL DAY'
+    return datetime(val.year, val.month, val.day).isoformat()
+
+
+def fetch_calendar_events(limit=10):
+    """Real events from CALENDAR_ICAL_URL. Recurring events (RRULE) are not
+    expanded â only a recurring event's own master occurrence is considered,
+    so a still-ongoing recurring event whose first occurrence was in the past
+    will not appear. Expanding RRULEs properly needs a dedicated library
+    (e.g. recurring-ical-events) which isn't installed; left as a known
+    limitation rather than adding an untested new dependency."""
+    if not CALENDAR_ICAL_URL:
+        return []
+    r = requests.get(CALENDAR_ICAL_URL, timeout=8)
+    r.raise_for_status()
+    cal = Calendar.from_ical(r.content)
+    now = datetime.now()
+    events = []
+    for component in cal.walk('VEVENT'):
+        dtstart = component.get('dtstart')
+        summary = component.get('summary')
+        if dtstart is None or summary is None:
+            continue
+        try:
+            start_iso = _event_start_iso(dtstart)
+            start_dt = datetime.fromisoformat(start_iso)
+        except (ValueError, AttributeError):
+            continue
+        if start_dt < now:
+            continue
+        events.append({'start': start_iso, 'title': str(summary)})
+    events.sort(key=lambda e: e['start'])
+    return events[:limit]
+
+
 @app.route('/api/calendar')
 @app.route('/calendar')
 def calendar():
-    return jsonify({'events': []})
+    return jsonify(fetch_calendar_events())
 
 # ── Proxy /api/* → Flask endpoints ───────────────────────────────────
 @app.route('/api/weather')
