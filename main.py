@@ -34,7 +34,6 @@ class JarvisWindow(Gtk.ApplicationWindow):
         settings = self.webview.get_settings()
         settings.set_allow_universal_access_from_file_urls(True)
         settings.set_allow_file_access_from_file_urls(True)
-        self.webview.connect('load-changed', self._on_load)
         GLib.timeout_add(15000, self._push_weather)
         self.webview.get_settings().set_enable_write_console_messages_to_stdout(True)
         rgba = Gdk.RGBA()
@@ -63,47 +62,6 @@ class JarvisWindow(Gtk.ApplicationWindow):
         except Exception as e:
             print(f'[Weather Push] {e}')
         return True
-
-    def _on_load(self, webview, event):
-        if event == WebKit.LoadEvent.FINISHED:
-            script = """
-            (function() {
-                function patch() {
-                    // Replace all text nodes containing NEXUS/SYSTEM
-                    document.querySelectorAll('*').forEach(el => {
-                        if (el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return;
-                        if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3) {
-                            var t = el.textContent.trim();
-                            if (t === 'NEXUS') el.textContent = 'JARVIS';
-                            if (t.includes('SYSTEM') || t.includes('IDLE') || 
-                                t.includes('STANDBY') || t.includes('STATUS') ||
-                                t.includes('INITIALIZ') || t.includes('v2.') ||
-                                t.includes('OS ')) {
-                                el.textContent = '';
-                            }
-                        }
-                    });
-                    // Also patch SVG text elements
-                    document.querySelectorAll('text').forEach(el => {
-                        if (el.textContent.includes('NEXUS')) el.textContent = 'JARVIS';
-                        if (el.textContent.includes('SYSTEM') ||
-                            el.textContent.includes('IDLE') ||
-                            el.textContent.includes('STANDBY') ||
-                            el.textContent.includes('STATUS') ||
-                            el.textContent.includes('v2') ||
-                            el.textContent.includes('OS ')) {
-                            el.textContent = '';
-                        }
-                    });
-                }
-                // Run immediately and again after animations render
-                patch();
-                setTimeout(patch, 500);
-                setTimeout(patch, 1500);
-                setTimeout(patch, 3000);
-            })();
-            """
-            webview.evaluate_javascript(script, -1, None, None, None, None, None)
 
 if __name__ == '__main__':
     app = JarvisApp()
