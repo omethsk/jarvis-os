@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SITE BUILDER</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;
+  font-family:system-ui,-apple-system,sans-serif;}
+body{background:
+    radial-gradient(circle at 12% 18%, rgba(230,40,180,.28), transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(230,40,180,.22), transparent 45%),
+    radial-gradient(circle at 50% 95%, rgba(230,40,180,.14), transparent 50%),
+    linear-gradient(165deg,#1a0512 0%,#280a1e 50%,#0f0509 100%);}
+::selection{background:rgba(230,40,180,.35);}
+
+#topbar{position:fixed;top:0;left:0;right:0;height:28px;z-index:200;
+  background:rgba(24,7,18,.72);
+  border-bottom:1px solid rgba(230,40,180,.14);
+  display:flex;align-items:center;padding:0 10px;gap:0;font-size:12px;
+  color:rgba(255,221,245,.88);user-select:none;-webkit-user-select:none;}
+#tb-logo{font-size:14px;margin-right:10px;
+  background:linear-gradient(90deg,#e628b4,#e628b4);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#tb-name{font-weight:800;letter-spacing:1.5px;margin-right:16px;
+  background:linear-gradient(90deg,#ff8adc,#e628b4 55%,#e628b4);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+#btn-friday{padding:3px 11px;border-radius:6px;border:1px solid rgba(230,40,180,.4);
+  background:rgba(230,40,180,.08);
+  color:rgba(255,175,235,.95);font-size:10px;letter-spacing:.6px;cursor:pointer;margin-right:8px;font-weight:600;
+  transition:background .15s,border-color .15s;}
+#btn-friday:hover{background:rgba(230,40,180,.2);border-color:rgba(230,40,180,.7);}
+#btn-home{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:3px 11px;font-size:10px;letter-spacing:.8px;
+  color:rgba(255,205,235,.8);cursor:pointer;transition:background .15s;}
+#btn-home:hover{background:rgba(255,255,255,.12);}
+
+#ribbon{position:fixed;top:28px;left:0;right:0;height:40px;z-index:190;
+  background:rgba(24,7,18,.55);
+  border-bottom:1px solid rgba(230,40,180,.1);
+  display:flex;align-items:center;padding:0 10px;gap:10px;}
+.rlbl{font-size:10px;color:rgba(255,175,235,.55);letter-spacing:.6px;font-weight:600;}
+#sel-saved{height:26px;background:rgba(230,40,180,.06);border:1px solid rgba(230,40,180,.12);
+  color:rgba(255,205,235,.85);border-radius:6px;padding:0 6px;font-size:11px;cursor:pointer;outline:none;
+  transition:border-color .15s;max-width:220px;}
+#sel-saved:hover{border-color:rgba(230,40,180,.5);}
+#btn-save,#btn-open{height:26px;padding:0 12px;border-radius:6px;border:1px solid rgba(230,40,180,.35);
+  background:rgba(230,40,180,.08);color:rgba(255,205,235,.9);font-size:10.5px;cursor:pointer;font-weight:600;
+  transition:background .15s;}
+#btn-save:hover,#btn-open:hover{background:rgba(230,40,180,.22);}
+#btn-save:disabled,#btn-open:disabled{opacity:.35;cursor:default;}
+#ribbon-status{margin-left:auto;font-size:10px;color:rgba(255,175,235,.5);letter-spacing:.3px;}
+
+#main{position:fixed;top:68px;left:0;right:0;bottom:0;display:flex;flex-direction:column;}
+#promptbar{padding:16px 20px;display:flex;gap:12px;flex-shrink:0;}
+#prompt-inp{flex:1;background:rgba(230,40,180,.05);
+  border:1px solid rgba(230,40,180,.16);
+  border-radius:14px;padding:14px 16px;font-size:13.5px;color:rgba(255,221,245,.95);outline:none;
+  resize:none;height:56px;font-family:system-ui,sans-serif;transition:border-color .18s,box-shadow .18s;}
+#prompt-inp:focus{border-color:rgba(230,40,180,.75);box-shadow:0 0 0 3px rgba(230,40,180,.15);}
+#prompt-inp::placeholder{color:rgba(230,169,220,.4);}
+#btn-gen{padding:0 26px;border-radius:14px;border:none;
+  background:linear-gradient(120deg,#e628b4,#c81ea0);
+  color:#1f0518;font-size:12.5px;letter-spacing:.8px;cursor:pointer;font-weight:700;
+  box-shadow:0 4px 20px rgba(230,40,180,.4);transition:transform .15s,box-shadow .15s;}
+#btn-gen:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(230,40,180,.55);}
+#btn-gen:active{transform:translateY(0);}
+#btn-gen:disabled{opacity:.5;cursor:default;transform:none;}
+
+#preview-wrap{flex:1;margin:0 20px 20px;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(230,40,180,.16);background:rgba(0,0,0,.35);position:relative;}
+#preview{width:100%;height:100%;border:none;background:#fff;display:none;}
+#preview.ready{display:block;}
+#empty-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:0 40px;}
+#empty-hint.hidden{display:none;}
+#empty-hint .eh-inner{max-width:420px;color:rgba(235,177,220,.5);font-size:12.5px;line-height:1.7;}
+#empty-hint .eh-icon{font-size:34px;display:block;margin-bottom:14px;
+  background:linear-gradient(120deg,#e628b4,#ff8adc);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#gen-overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(15,5,9,.75);backdrop-filter:blur(4px);}
+#gen-overlay.active{display:flex;}
+#gen-overlay-inner{text-align:center;color:rgba(255,205,235,.9);font-size:12.5px;letter-spacing:.5px;}
+.spin-dots{display:flex;gap:5px;justify-content:center;margin-bottom:12px;}
+.spin-dots span{width:7px;height:7px;border-radius:50%;background:linear-gradient(120deg,#e628b4,#ff8adc);animation:jd .9s ease-in-out infinite;}
+.spin-dots span:nth-child(2){animation-delay:.18s;}
+.spin-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes jd{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+#jpanel{position:fixed;top:68px;right:0;bottom:0;width:320px;z-index:400;
+  background:rgba(15,5,11,.9);
+  border-left:1px solid rgba(230,40,180,.16);
+  display:flex;flex-direction:column;transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+#jpanel.open{transform:translateX(0);}
+#jp-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+  border-bottom:1px solid rgba(230,40,180,.14);flex-shrink:0;}
+#jp-title{font-family:monospace;font-size:10px;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(90deg,#e628b4,#ff8adc);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#jp-x{width:24px;height:24px;border-radius:6px;border:1px solid rgba(230,40,180,.14);background:transparent;
+  color:rgba(240,179,220,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;
+  transition:background .15s,color .15s;}
+#jp-x:hover{background:rgba(244,63,94,.15);color:rgba(253,164,175,.95);}
+#jp-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+#jp-msgs::-webkit-scrollbar{width:4px;}
+#jp-msgs::-webkit-scrollbar-thumb{background:rgba(230,40,180,.3);border-radius:2px;}
+.jm{display:flex;flex-direction:column;gap:3px;max-width:93%;}
+.jm.u{align-self:flex-end;align-items:flex-end;}
+.jm.b{align-self:flex-start;align-items:flex-start;}
+.jm-who{font-size:8px;letter-spacing:1.8px;color:rgba(220,159,200,.5);font-weight:700;}
+.jm.b .jm-who{color:rgba(230,40,180,.9);}
+.jm-bub{padding:9px 12px;border-radius:12px;font-size:11.5px;line-height:1.6;word-break:break-word;font-family:monospace;}
+.jm.u .jm-bub{background:linear-gradient(120deg,rgba(230,40,180,.22),rgba(230,40,180,.18));
+  border:1px solid rgba(230,40,180,.3);color:rgba(255,221,245,.95);border-radius:12px 12px 2px 12px;}
+.jm.b .jm-bub{background:rgba(230,40,180,.05);border:1px solid rgba(230,40,180,.1);color:rgba(250,204,235,.9);border-radius:12px 12px 12px 2px;}
+#jp-ft{padding:10px 12px;border-top:1px solid rgba(230,40,180,.12);flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
+#jp-inp{width:100%;background:rgba(230,40,180,.05);border:1px solid rgba(230,40,180,.14);border-radius:10px;
+  padding:8px 11px;font-size:12px;color:rgba(255,221,245,.95);outline:none;resize:none;height:58px;
+  font-family:monospace;transition:border-color .18s;}
+#jp-inp:focus{border-color:rgba(230,40,180,.7);}
+#jp-inp::placeholder{color:rgba(220,159,200,.45);}
+#jp-send{width:100%;padding:7px;border-radius:9px;border:none;
+  background:linear-gradient(120deg,#e628b4,#c81ea0);
+  color:#1f0518;font-size:10.5px;letter-spacing:1px;cursor:pointer;font-family:monospace;font-weight:700;
+  transition:transform .15s,box-shadow .15s;}
+#jp-send:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(230,40,180,.4);}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span id="tb-logo">&#10022;</span>
+  <span id="tb-name">SITE BUILDER</span>
+  <div id="tb-right">
+    <div id="btn-friday" onclick="toggleJpanel()">&#10022; FRIDAY</div>
+    <div id="btn-home" onclick="goHome()">&#10022; DESKTOP</div>
+  </div>
+</div>
+
+<div id="ribbon">
+  <span class="rlbl">SAVED</span>
+  <select id="sel-saved" onchange="openSaved(this.value)"><option value="">— none yet —</option></select>
+  <button id="btn-save" onclick="saveCurrent()" disabled>SAVE</button>
+  <button id="btn-open" onclick="openInBrowser()" disabled>OPEN IN BROWSER</button>
+  <span id="ribbon-status"></span>
+</div>
+
+<div id="main">
+  <div id="promptbar">
+    <textarea id="prompt-inp" placeholder="Describe the website you want — e.g. a landing page for a specialty coffee roastery…"></textarea>
+    <button id="btn-gen" onclick="generateFromForm()">GENERATE</button>
+  </div>
+  <div id="preview-wrap">
+    <iframe id="preview"></iframe>
+    <div id="empty-hint"><div class="eh-inner"><span class="eh-icon">&#10022;</span>Describe a website above, or ask FRIDAY in the panel — she'll build something that actually looks premium.</div></div>
+    <div id="gen-overlay"><div id="gen-overlay-inner"><div class="spin-dots"><span></span><span></span><span></span></div>Building your site…</div></div>
+  </div>
+</div>
+
+<div id="jpanel">
+  <div id="jp-hd"><span id="jp-title">&#10022; ASK FRIDAY</span><button id="jp-x" onclick="toggleJpanel()">&#10005;</button></div>
+  <div id="jp-msgs">
+    <div class="jm b">
+      <span class="jm-who">FRIDAY</span>
+      <div class="jm-bub">Describe what you want and I'll build it — or ask me to change something about what's already on screen.</div>
+    </div>
+  </div>
+  <div id="jp-ft">
+    <textarea id="jp-inp" placeholder="Ask FRIDAY to build or refine…"></textarea>
+    <div id="jp-row"><button id="jp-send" onclick="sendMsg()">SEND</button></div>
+  </div>
+</div>
+
+<script>
+var API_BASE=location.protocol==='file:'?'http://127.0.0.1:5000':'';
+var currentHtml=null;
+var currentTitle='';
+var currentSlug=null;
+var _hist=[];
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function setStatus(msg){
+  document.getElementById('ribbon-status').textContent=msg||'';
+}
+
+function showPreview(html){
+  currentHtml=html;
+  var frame=document.getElementById('preview');
+  frame.srcdoc=html;
+  frame.classList.add('ready');
+  document.getElementById('empty-hint').classList.add('hidden');
+  document.getElementById('btn-save').disabled=false;
+  currentSlug=null;
+  document.getElementById('btn-open').disabled=true;
+}
+
+function generateFromForm(){
+  var inp=document.getElementById('prompt-inp');
+  var prompt=inp.value.trim();
+  if(!prompt) return;
+  runGeneration(prompt, currentHtml);
+}
+
+function runGeneration(message, context){
+  var btn=document.getElementById('btn-gen');
+  btn.disabled=true;
+  document.getElementById('gen-overlay').classList.add('active');
+  setStatus('');
+  fetch(API_BASE+'/jarvis-ai',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      message:message,
+      context:context||'',
+      doc_title:currentTitle||'Untitled Site',
+      app:'site',
+      history:_hist.slice(-6)
+    })
+  }).then(function(r){ return r.json(); })
+    .then(function(data){
+      _hist.push({role:'user',content:message});
+      if(data.response) _hist.push({role:'assistant',content:data.response});
+      var action=data.action;
+      if(action && action.type==='generate' && action.html){
+        if(action.title) currentTitle=action.title;
+        showPreview(action.html);
+        document.getElementById('prompt-inp').value='';
+        setStatus(data.response||'Done.');
+      } else {
+        setStatus(data.response||'No site produced — try rephrasing.');
+      }
+    })
+    .catch(function(){
+      setStatus('FRIDAY offline — backend not reachable.');
+    })
+    .finally(function(){
+      btn.disabled=false;
+      document.getElementById('gen-overlay').classList.remove('active');
+    });
+}
+
+function saveCurrent(){
+  if(!currentHtml) return;
+  var title=currentTitle||prompt('Name this site:','My Site')||'Untitled Site';
+  currentTitle=title;
+  fetch(API_BASE+'/api/sites/save',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({html:currentHtml,title:title})
+  }).then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.slug){
+        currentSlug=data.slug;
+        document.getElementById('btn-open').disabled=false;
+        setStatus('Saved as "'+title+'".');
+        loadSavedList();
+      } else {
+        setStatus('Save failed.');
+      }
+    }).catch(function(){ setStatus('Save failed — backend not reachable.'); });
+}
+
+function openInBrowser(){
+  if(!currentSlug) return;
+  var url=(API_BASE||'http://127.0.0.1:5000')+'/sites/'+currentSlug+'/';
+  fetch(API_BASE+'/api/browser/open',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({url:url})
+  }).then(function(r){ return r.json(); })
+    .then(function(data){
+      setStatus(data.launched?'Opened in browser.':'Could not open browser.');
+    }).catch(function(){ setStatus('Could not reach backend.'); });
+}
+
+function loadSavedList(){
+  fetch(API_BASE+'/api/sites').then(function(r){ return r.json(); }).then(function(sites){
+    var sel=document.getElementById('sel-saved');
+    sel.innerHTML='<option value="">— none yet —</option>'+sites.map(function(s){
+      return '<option value="'+escHtml(s.slug)+'">'+escHtml(s.title)+'</option>';
+    }).join('');
+  }).catch(function(){});
+}
+
+function openSaved(slug){
+  if(!slug) return;
+  var frame=document.getElementById('preview');
+  frame.removeAttribute('srcdoc');
+  frame.src=(API_BASE||'')+'/sites/'+slug+'/';
+  frame.classList.add('ready');
+  document.getElementById('empty-hint').classList.add('hidden');
+  currentSlug=slug;
+  currentHtml=null;
+  document.getElementById('btn-save').disabled=true;
+  document.getElementById('btn-open').disabled=false;
+}
+
+function toggleJpanel(){var p=document.getElementById('jpanel');p.classList.toggle('open');if(p.classList.contains('open'))setTimeout(function(){document.getElementById('jp-inp').focus();},280);}
+function addMsg(role,text){var b=document.getElementById('jp-msgs');var d=document.createElement('div');d.className='jm '+role;d.innerHTML='<span class="jm-who">'+(role==='u'?'YOU':'FRIDAY')+'</span><div class="jm-bub">'+escHtml(text).replace(/\n/g,'<br>')+'</div>';b.appendChild(d);b.scrollTop=b.scrollHeight;}
+
+function sendMsg(){
+  var inp=document.getElementById('jp-inp');
+  var msg=inp.value.trim();
+  if(!msg) return;
+  inp.value='';
+  addMsg('u',msg);
+  runGeneration(msg, currentHtml);
+  var checkDone=setInterval(function(){
+    if(!document.getElementById('gen-overlay').classList.contains('active')){
+      clearInterval(checkDone);
+      var last=_hist[_hist.length-1];
+      if(last && last.role==='assistant') addMsg('b',last.content);
+    }
+  },400);
+}
+
+function goHome(){
+  if(window.self!==window.top){ window.parent.postMessage({jarvisWindow:'close'},'*'); return; }
+  window.location.href='desktop.html';
+}
+
+document.getElementById('prompt-inp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();generateFromForm();}
+});
+document.getElementById('jp-inp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+});
+
+loadSavedList();
+</script>
+</body>
+</html>

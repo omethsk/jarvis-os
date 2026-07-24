@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import time
 import threading
 import subprocess
@@ -323,6 +324,48 @@ JARVIS_AI_SCHEMAS = {
         '(e.g. if the user is just chatting or asking a question).\n\n'
         'Reply with ONLY a JSON object shaped exactly like: {"response":"...","action":null or {...}}'
     ),
+    'site': (
+        'You are the JARVIS OS Website Architect. Generate a single, complete, professional website that '
+        'looks like a $50,000+ agency build, not a generic template. Make bold, opinionated design choices; '
+        'never default Bootstrap/Tailwind utility-class soup, never lorem ipsum, never plain black-on-white '
+        'with unstyled default browser buttons.\n\n'
+        'OUTPUT: a single self-contained HTML document (starting with <!DOCTYPE html>) as the "html" field '
+        '- inline <style> in <head>, inline <script> before </body>. The only external resources allowed are '
+        'CDN links for Google Fonts and the AOS scroll-animation library (both required, see below).\n\n'
+        'REQUIRED HEAD TAGS: <meta charset="utf-8">, <meta name="viewport" content="width=device-width, '
+        'initial-scale=1">, <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">, and a '
+        'Google Fonts <link> for a deliberate font PAIRING (a distinctive display/heading font plus a clean '
+        'body sans) chosen to match the site\'s subject and tone - never default system-ui/Arial for a '
+        'premium site.\n\n'
+        'TYPOGRAPHY & COLOR: pick ONE cohesive palette suited to the subject (e.g. moody dark plus a single '
+        'vivid accent for a tech/SaaS product; warm cream plus deep green for organic/wellness; near-black '
+        'plus gold for luxury) - never default blue links or pure black text on pure white. Generous '
+        'whitespace, large bold headlines (use clamp() for fluid sizing), soft shadows, 12-20px rounded '
+        'corners on cards and buttons.\n\n'
+        'STRUCTURE (adapt section choice and order to the request - this is a menu, not a fixed checklist):\n'
+        '- Sticky nav bar with a backdrop-blur glass effect, logo/name left, links right, smooth-scroll '
+        'anchors\n'
+        '- Hero: bold headline, short subheadline, one prominent CTA button with a real hover animation '
+        '(transform plus shadow plus transition) - never a plain unstyled <button>\n'
+        '- A features/services section as a responsive card grid (icon or emoji plus heading plus a 1-2 '
+        'sentence description per card)\n'
+        '- A stats/numbers section highlighting impressive metrics, only if the topic genuinely supports it\n'
+        '- Social proof: one or two testimonials styled as real quote cards, not bare paragraphs\n'
+        '- A strong closing CTA section, visually distinct from the body background\n'
+        '- A clean footer with a couple of nav links\n\n'
+        'ANIMATION (required - the single most important part of feeling expensive): give every major '
+        'section a data-aos attribute (e.g. "fade-up", "fade-right", "zoom-in") staggered with '
+        'data-aos-delay on child elements so content reveals as the user scrolls rather than all at once. '
+        'Include AOS\'s script tag (https://unpkg.com/aos@2.3.1/dist/aos.js) and call AOS.init() before '
+        '</body>. Also add real CSS micro-interactions: button hover states, nav link underline-on-hover, '
+        'card hover lift, and html{scroll-behavior:smooth}.\n\n'
+        'COPY: write real, specific, on-topic copy for every heading and paragraph - never placeholder or '
+        'lorem ipsum text, never a literal "Company Name" left in.\n\n'
+        'If a "REAL BACKGROUND FACTS" section appears below, ground the copy in it (real facts, in your '
+        'own words) rather than inventing details.\n\n'
+        'Reply with ONLY a JSON object shaped exactly like: {"response":"...","action":{"type":"generate",'
+        '"html":"...","title":"..."} or null}'
+    ),
 }
 
 @app.route('/jarvis-ai', methods=['POST'])
@@ -350,7 +393,7 @@ def jarvis_ai_route():
     # Ground content-generation requests in real facts instead of purely the
     # model's own (possibly outdated/hallucinated) training knowledge. Free,
     # no API key, no quota — see jarvis_ai.wikipedia_context.
-    if app_name in ('docs', 'deck'):
+    if app_name in ('docs', 'deck', 'site'):
         wiki_extract, wiki_title = wikipedia_context(extract_topic(message))
         if wiki_extract:
             extra += (
@@ -420,6 +463,8 @@ def weather():
 
 # ── Wallpapers ───────────────────────────────────────────────────────
 WALLPAPER_PATH = os.path.join(app.static_folder, 'current_wallpaper.jpg')
+GENERATED_SITES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'generated_sites')
+os.makedirs(GENERATED_SITES_DIR, exist_ok=True)
 
 @app.route('/wallhaven/search')
 def wallhaven_search_route():
@@ -487,6 +532,11 @@ ICON_STUDIO = _icon(
     '<path d="M12 2l1.6 5.4L19 9l-5.4 1.6L12 16l-1.6-5.4L5 9l5.4-1.6L12 2z"/>'
     '<path d="M19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15z"/>'
 )
+ICON_SITE = _icon(
+    '<rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/>'
+    '<circle cx="5.5" cy="6.5" r=".6" fill="currentColor" stroke="none"/>'
+    '<circle cx="7.5" cy="6.5" r=".6" fill="currentColor" stroke="none"/>'
+)
 ICON_WALLPAPERS = _icon(
     '<polygon points="12 2 2 7 12 12 22 7 12 2"/>'
     '<polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>'
@@ -511,6 +561,7 @@ DEFAULT_DOCK = [
     {'name': 'Photos',     'icon': ICON_PHOTOS, 'native': 'photos', 'enabled': True, 'agent': 'jarvis'},
     {'name': 'Notes',      'icon': ICON_NOTES, 'native': 'notes', 'enabled': True, 'agent': 'jarvis'},
     {'name': 'Studio',     'icon': ICON_STUDIO, 'app': 'studio.html', 'enabled': True, 'agent': 'friday'},
+    {'name': 'Sites',      'icon': ICON_SITE, 'app': 'site.html', 'enabled': True, 'agent': 'friday'},
     {'name': 'Wallpapers', 'icon': ICON_WALLPAPERS, 'app': 'wallpapers.html', 'enabled': True, 'agent': 'jarvis'},
     {'name': 'Settings',   'icon': ICON_SETTINGS, 'app': 'settings.html', 'enabled': True, 'agent': 'edith'},
 ]
@@ -574,6 +625,79 @@ def launch_native_app(app_name):
     return jsonify({'launched': app_name})
 
 # ── Settings: Dock & Apps ─────────────────────────────────────────────
+def _slugify(name):
+    s = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    return s or "site"
+
+
+@app.route("/api/sites")
+def list_sites():
+    sites = []
+    if os.path.isdir(GENERATED_SITES_DIR):
+        for slug in sorted(os.listdir(GENERATED_SITES_DIR)):
+            index_path = os.path.join(GENERATED_SITES_DIR, slug, "index.html")
+            if not os.path.isfile(index_path):
+                continue
+            title, created = slug, None
+            meta_path = os.path.join(GENERATED_SITES_DIR, slug, "meta.json")
+            if os.path.isfile(meta_path):
+                try:
+                    with open(meta_path) as f:
+                        meta = json.load(f)
+                    title = meta.get("title", slug)
+                    created = meta.get("created")
+                except (OSError, ValueError):
+                    pass
+            sites.append({"slug": slug, "title": title, "created": created, "url": f"/sites/{slug}/"})
+    sites.sort(key=lambda s: s.get("created") or "", reverse=True)
+    return jsonify(sites)
+
+
+@app.route("/api/sites/save", methods=["POST"])
+def save_site():
+    data = get_json_body()
+    html = str(data.get("html") or "")
+    title = str(data.get("title") or "Untitled Site").strip()[:100]
+    if not html.strip():
+        return jsonify({"error": "no html provided"}), 400
+    base_slug = _slugify(title)
+    slug = base_slug
+    n = 2
+    while os.path.isdir(os.path.join(GENERATED_SITES_DIR, slug)):
+        slug = f"{base_slug}-{n}"
+        n += 1
+    site_dir = os.path.join(GENERATED_SITES_DIR, slug)
+    os.makedirs(site_dir, exist_ok=True)
+    with open(os.path.join(site_dir, "index.html"), "w") as f:
+        f.write(html)
+    with open(os.path.join(site_dir, "meta.json"), "w") as f:
+        json.dump({"title": title, "created": datetime.now().isoformat()}, f)
+    return jsonify({"slug": slug, "url": f"/sites/{slug}/"})
+
+
+@app.route("/sites/<slug>/")
+def serve_site(slug):
+    if not re.fullmatch(r"[a-z0-9-]+", slug):
+        return jsonify({"error": "invalid slug"}), 400
+    site_dir = os.path.join(GENERATED_SITES_DIR, slug)
+    if not os.path.isdir(site_dir):
+        return jsonify({"error": "not found"}), 404
+    return send_from_directory(site_dir, "index.html")
+
+
+@app.route("/api/browser/open", methods=["POST"])
+def browser_open():
+    data = get_json_body()
+    url = str(data.get("url") or "").strip()
+    if not url.startswith(("http://", "https://")):
+        return jsonify({"error": "invalid url"}), 400
+    try:
+        subprocess.Popen(NATIVE_APPS["browser"] + [url])
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"launched": True})
+
+
 @app.route('/api/settings/dock', methods=['GET', 'POST'])
 def settings_dock():
     if request.method == 'POST':
