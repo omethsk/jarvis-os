@@ -1022,10 +1022,44 @@ function spotlightAsk(question){
     if(jarvisSettings().emotionReactions!==false){
       jarvisFaceHandle.setEmotion('curious');
       setTimeout(function(){ jarvisFaceHandle.setEmotion('calm'); },1000);
+      if(Math.random()<0.2) ambientSpeak();
     }
     idleFaceTic();
   },14000+Math.random()*12000);
 })();
+
+/* Rare in-character ambient line, spoken aloud, so the desktop feels
+   present even when nobody is interacting with it. Gated behind the same
+   emotionReactions setting as the idle glance above, and rate-limited to
+   at most once every 90s regardless of how often the tic above fires. */
+var AMBIENT_LINES={
+  edith:['All systems nominal.','Standing by.','Diagnostics clear.'],
+  jarvis:['Still here, sir.','At your leisure.','No pressing matters, sir.'],
+  friday:['Ready when you are.','Got something in mind?','Let\'s make something.']
+};
+var lastAmbientSpeak=0;
+function ambientSpeak(){
+  var now=Date.now();
+  if(now-lastAmbientSpeak<90000) return;
+  var lines=AMBIENT_LINES[currentAgent]||AMBIENT_LINES.jarvis;
+  var line=lines[Math.floor(Math.random()*lines.length)];
+  lastAmbientSpeak=now;
+  fetch(API_BASE+'/tts',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text:line,agent:currentAgent})
+  }).then(function(r){
+    if(!r.ok) throw new Error('tts failed');
+    return r.blob();
+  }).then(function(blob){
+    var url=URL.createObjectURL(blob);
+    var audio=new Audio(url);
+    jarvisFaceHandle.setState('speaking');
+    audio.onended=function(){ jarvisFaceHandle.setState('idle'); URL.revokeObjectURL(url); };
+    audio.onerror=function(){ jarvisFaceHandle.setState('idle'); URL.revokeObjectURL(url); };
+    audio.play().catch(function(){ jarvisFaceHandle.setState('idle'); });
+  }).catch(function(){});
+}
 
 /* ── Weather ── */
 var WX_ICONS={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
