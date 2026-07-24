@@ -331,12 +331,12 @@ JARVIS_AI_SCHEMAS = {
         'with unstyled default browser buttons.\n\n'
         'OUTPUT: a single self-contained HTML document (starting with <!DOCTYPE html>) as the "html" field '
         '- inline <style> in <head>, inline <script> before </body>. The only external resources allowed are '
-        'CDN links for Google Fonts and the AOS scroll-animation library (both required, see below).\n\n'
+        'CDN links for Google Fonts, GSAP plus its ScrollTrigger plugin (both required), and optionally '
+        'Three.js (see ANIMATION below).\n\n'
         'REQUIRED HEAD TAGS: <meta charset="utf-8">, <meta name="viewport" content="width=device-width, '
-        'initial-scale=1">, <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">, and a '
-        'Google Fonts <link> for a deliberate font PAIRING (a distinctive display/heading font plus a clean '
-        'body sans) chosen to match the site\'s subject and tone - never default system-ui/Arial for a '
-        'premium site.\n\n'
+        'initial-scale=1">, and a Google Fonts <link> for a deliberate font PAIRING (a distinctive display/'
+        'heading font plus a clean body sans) chosen to match the site\'s subject and tone - never default '
+        'system-ui/Arial for a premium site.\n\n'
         'COLOR - work this out fresh for THIS specific business, do not reuse a generic default palette '
         '(the single most common way an AI-generated site looks cheap, and the most common way it looks '
         'identical to every other AI-generated site, is skipping this reasoning step):\n'
@@ -379,21 +379,38 @@ JARVIS_AI_SCHEMAS = {
         'search phrase>" (e.g. src="QUERY: rustic farmhouse dining table sunset") describing what should '
         'be IN the photo, not the business\'s name - this is resolved to a real photo automatically before '
         'the page is shown, you never need a real URL. Always pair each image with object-fit:cover and a '
-        'set height or aspect-ratio so a real photo slots in cleanly, and give every image its own data-aos '
-        'reveal too.\n\n'
+        'set height or aspect-ratio so a real photo slots in cleanly, and give every image its own scroll-'
+        'triggered reveal too.\n\n'
         'ANIMATION (required - the single most important part of feeling expensive, and this needs MORE '
-        'of it, not less): every section, every card inside a grid, every image, and every headline or '
-        'paragraph should have its OWN data-aos attribute - not just the outer section wrapper. Vary the '
-        'animation type across the page (mix "fade-up", "fade-down", "fade-left", "fade-right", "zoom-'
-        'in", "flip-left" - never the same one everywhere) and stagger data-aos-delay so items in the '
-        'same grid reveal one after another, not all at once. On top of AOS scroll-reveal, add continuous '
-        'CSS animation to at least 2-3 decorative elements via @keyframes (a slow-drifting gradient blob '
-        'behind the hero, a subtle floating/bobbing icon, a slowly pulsing glow behind the CTA button) so '
-        'the page feels alive even before the user scrolls, not just when they do. Include AOS\'s script '
-        'tag (https://unpkg.com/aos@2.3.1/dist/aos.js) and call AOS.init() before </body>. Also add real '
-        'CSS micro-interactions: button hover states (transform plus shadow plus transition), nav link '
-        'underline-on-hover, card hover lift with a growing shadow, image hover zoom (overflow:hidden on '
-        'the container, scale the img on :hover), and html{scroll-behavior:smooth}.\n\n'
+        'of it, not less): use GSAP with the ScrollTrigger plugin as the animation engine. Register the '
+        'plugin once near the top of your script: gsap.registerPlugin(ScrollTrigger). Give every section, '
+        'every card inside a grid, every image, and every headline or paragraph its own scroll-triggered '
+        'animation - not just the outer section wrapper. Use gsap.from() for entrance reveals, e.g.: '
+        'gsap.from(".card", {opacity:0, y:40, duration:0.8, stagger:0.15, scrollTrigger:{trigger:".card-'
+        'grid", start:"top 80%"}}) - and vary the motion across the page (mix y-offset fades, x-offset '
+        'slides, scale-ins, slight rotation - never the exact same tween everywhere). For at least one '
+        'major section, use a real scroll-scrubbed effect where animation progress is tied directly to '
+        'scroll position rather than firing once: scrollTrigger:{trigger:el, start:"top bottom", '
+        'end:"bottom top", scrub:true} - e.g. a hero image that scales or shifts as the user scrolls past '
+        'it.\n\n'
+        'On top of GSAP, add continuous CSS animation to at least 2-3 decorative elements via @keyframes '
+        '(a slow-drifting gradient blob behind the hero, a subtle floating/bobbing icon, a slowly pulsing '
+        'glow behind the CTA button) so the page feels alive even before the user scrolls.\n\n'
+        'OPTIONAL - abstract 3D decoration: for a hero or section background you may add a small '
+        'procedural Three.js scene (simple rotating/floating primitive shapes - a torus, icosahedron, or '
+        'sphere group - NEVER a specific real-world object, since there is no 3D model source available, '
+        'only abstract geometry) rendered into a <canvas> positioned behind the content with pointer-'
+        'events:none. Wrap the entire Three.js setup in try/catch so a WebGL failure never breaks the rest '
+        'of the page\'s animations. Keep it to ONE canvas in ONE section - a decorative accent, not the '
+        'page\'s foundation, and skip it entirely if it would not genuinely add something.\n\n'
+        'Include these script tags before </body>, in this order: https://cdn.jsdelivr.net/npm/gsap@3.12.5'
+        '/dist/gsap.min.js, https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js, and - only '
+        'if you used the optional 3D decoration - https://cdn.jsdelivr.net/npm/three@0.160.0/build/'
+        'three.min.js.\n\n'
+        'Also add real CSS micro-interactions: button hover states (transform plus shadow plus '
+        'transition), nav link underline-on-hover, card hover lift with a growing shadow, image hover '
+        'zoom (overflow:hidden on the container, scale the img on :hover), and html{scroll-behavior:'
+        'smooth}.\n\n'
         'COPY: write real, specific, on-topic copy for every heading and paragraph - never placeholder or '
         'lorem ipsum text, never a literal "Company Name" left in.\n\n'
         'If a "REAL BACKGROUND FACTS" section appears below, ground the copy in it (real facts, in your '
@@ -440,12 +457,35 @@ def jarvis_ai_route():
 
     messages = [{'role': 'system', 'content': system_prompt}] + history + [{'role': 'user', 'content': message}]
 
-    raw, err = call_llm(messages, 8192, GROQ_API_KEY, OPENROUTER_API_KEY, want_json=True)
+    # site generations (GSAP/ScrollTrigger/optional Three.js boilerplate on top
+    # of the HTML/CSS itself) run noticeably longer than the other apps and were
+    # getting truncated mid-response at the shared 8192 ceiling, corrupting the
+    # JSON - give that app more headroom.
+    max_tokens = 16000 if app_name == 'site' else 8192
+    raw, err = call_llm(messages, max_tokens, GROQ_API_KEY, OPENROUTER_API_KEY, want_json=True)
     if raw is None:
         return jsonify({'response': f'JARVIS offline — {err}', 'action': None}), 502
 
     cleaned = strip_thinking(raw)
     reply_obj = parse_jarvis_reply(cleaned)
+
+    def _valid_site_action(obj):
+        action = obj.get('action')
+        return isinstance(action, dict) and isinstance(action.get('html'), str) and action['html'].strip().endswith('</html>')
+
+    # Site generations (long, structurally complex JSON with embedded GSAP/CSS/
+    # escaped HTML) occasionally come back truncated or stuck in a degenerate
+    # repeat loop from the model - retry rather than surfacing a broken/empty
+    # site to the user.
+    if app_name == 'site' and not _valid_site_action(reply_obj):
+        for _ in range(2):
+            raw, err = call_llm(messages, max_tokens, GROQ_API_KEY, OPENROUTER_API_KEY, want_json=True)
+            if raw is None:
+                continue
+            candidate = parse_jarvis_reply(strip_thinking(raw))
+            reply_obj = candidate
+            if _valid_site_action(candidate):
+                break
 
     # Deck slides can ask for a real photo via "image_query", or explicitly
     # request "image_source":"generate" to AI-generate from that same text

@@ -105,7 +105,8 @@ def wikipedia_context(query, timeout=8):
 
 def pexels_search_image(query, api_key, orientation=None, timeout=8):
     """Search Pexels for a real, freely-licensed photo. Returns an image URL
-    (~940px wide, good for a slide) or None if not found/no key/error.
+    (~1880px wide - large2x - so it stays crisp as a full-bleed hero/background,
+    not just a thumbnail) or None if not found/no key/error.
     """
     if not api_key or not query:
         return None
@@ -123,7 +124,7 @@ def pexels_search_image(query, api_key, orientation=None, timeout=8):
         if not photos:
             return None
         src = photos[0].get('src', {})
-        return src.get('large') or src.get('medium') or src.get('original')
+        return src.get('large2x') or src.get('large') or src.get('original') or src.get('medium')
     except Exception:
         return None
 
@@ -263,7 +264,10 @@ def call_groq(messages, max_tokens, api_key, want_json=False, temperature=0.5, t
         return None, 'groq rate limited'
     if r.status_code != 200:
         return None, f'groq error {r.status_code}'
-    result = r.json()
+    try:
+        result = r.json()
+    except ValueError:
+        return None, 'groq: malformed/truncated response body'
     if 'choices' not in result:
         return None, result.get('error', {}).get('message', 'groq: no choices in response')
     content = result['choices'][0]['message'].get('content')
@@ -313,7 +317,11 @@ def call_openrouter(messages, max_tokens, api_key, want_json=False, temperature=
         if r.status_code != 200:
             last_err = f'{model} error {r.status_code}'
             continue
-        result = r.json()
+        try:
+            result = r.json()
+        except ValueError:
+            last_err = f'{model}: malformed/truncated response body'
+            continue
         if 'choices' not in result:
             last_err = f'{model}: no choices in response'
             continue
