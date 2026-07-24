@@ -175,11 +175,11 @@ function addMessage(role,text,cls,thinking){
   return div;
 }
 
-function speak(text){
+function speak(text, agent){
   fetch(API_BASE+'/tts',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({text:text})
+    body:JSON.stringify({text:text, agent:agent})
   }).then(function(r){
     if(!r.ok) throw new Error('tts failed');
     return r.blob();
@@ -216,7 +216,7 @@ function sendAsk(){
     chat.scrollTop=chat.scrollHeight;
     face.setEmotion(data.emotion||'calm');
     setTimeout(function(){ face.setEmotion('calm'); },8000);
-    speak(answer);
+    speak(answer, activeAgent);
   }).catch(function(){
     pending.className='msg msg-jarvis error';
     pending.querySelector('.msg-body').textContent='Something went wrong — try again.';

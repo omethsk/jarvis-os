@@ -75,6 +75,16 @@ CALENDAR_ICAL_URL = os.environ.get('CALENDAR_ICAL_URL', '')
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY', '')
 ELEVENLABS_VOICE_ID = os.environ.get('ELEVENLABS_VOICE_ID', '')
 
+# Distinct voice per agent persona. edith/friday use ElevenLabs' standard
+# premade library (Arnold: deep/authoritative, Bella: distinct female voice
+# for contrast); jarvis keeps whatever voice was already configured above.
+# Character fit is a best guess from ElevenLabs' own voice descriptions,
+# not verified by ear - easy to swap the IDs below if a pairing feels off.
+AGENT_VOICE_IDS = {
+    'edith': 'VR6AewLTigWG4xSOukaG',
+    'friday': 'EXAVITQu4vr4xnSDxMaL',
+}
+
 # ── Serve HTML assets ────────────────────────────────────────────────
 @app.route('/')
 def index():
@@ -753,14 +763,16 @@ def calendar():
 def tts():
     data = get_json_body()
     text = str(data.get('text') or '').strip()
+    agent = str(data.get('agent') or 'jarvis')
+    voice_id = AGENT_VOICE_IDS.get(agent, ELEVENLABS_VOICE_ID)
     if not text:
         return jsonify({'error': 'no text provided'}), 400
-    if not ELEVENLABS_API_KEY or not ELEVENLABS_VOICE_ID:
+    if not ELEVENLABS_API_KEY or not voice_id:
         return jsonify({'error': 'TTS not configured'}), 500
     text = text[:2000]
     try:
         r = requests.post(
-            f'https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}',
+            f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}',
             headers={
                 'xi-api-key': ELEVENLABS_API_KEY,
                 'Content-Type': 'application/json',
