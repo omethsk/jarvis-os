@@ -372,12 +372,28 @@ JARVIS_AI_SCHEMAS = {
         '- Social proof: one or two testimonials styled as real quote cards, not bare paragraphs\n'
         '- A strong closing CTA section, visually distinct from the body background\n'
         '- A clean footer with a couple of nav links\n\n'
-        'ANIMATION (required - the single most important part of feeling expensive): give every major '
-        'section a data-aos attribute (e.g. "fade-up", "fade-right", "zoom-in") staggered with '
-        'data-aos-delay on child elements so content reveals as the user scrolls rather than all at once. '
-        'Include AOS\'s script tag (https://unpkg.com/aos@2.3.1/dist/aos.js) and call AOS.init() before '
-        '</body>. Also add real CSS micro-interactions: button hover states, nav link underline-on-hover, '
-        'card hover lift, and html{scroll-behavior:smooth}.\n\n'
+        'IMAGES (required - a site with zero real images looks empty and cheap, never skip this): '
+        'include at least 2-4 real photos wherever a photo would genuinely strengthen the page (hero '
+        'background, a feature/product/team/interior shot, etc.) via <img> tags. Since you cannot see or '
+        'fetch real photos yourself, write the src attribute exactly like this: src="QUERY: <short specific '
+        'search phrase>" (e.g. src="QUERY: rustic farmhouse dining table sunset") describing what should '
+        'be IN the photo, not the business\'s name - this is resolved to a real photo automatically before '
+        'the page is shown, you never need a real URL. Always pair each image with object-fit:cover and a '
+        'set height or aspect-ratio so a real photo slots in cleanly, and give every image its own data-aos '
+        'reveal too.\n\n'
+        'ANIMATION (required - the single most important part of feeling expensive, and this needs MORE '
+        'of it, not less): every section, every card inside a grid, every image, and every headline or '
+        'paragraph should have its OWN data-aos attribute - not just the outer section wrapper. Vary the '
+        'animation type across the page (mix "fade-up", "fade-down", "fade-left", "fade-right", "zoom-'
+        'in", "flip-left" - never the same one everywhere) and stagger data-aos-delay so items in the '
+        'same grid reveal one after another, not all at once. On top of AOS scroll-reveal, add continuous '
+        'CSS animation to at least 2-3 decorative elements via @keyframes (a slow-drifting gradient blob '
+        'behind the hero, a subtle floating/bobbing icon, a slowly pulsing glow behind the CTA button) so '
+        'the page feels alive even before the user scrolls, not just when they do. Include AOS\'s script '
+        'tag (https://unpkg.com/aos@2.3.1/dist/aos.js) and call AOS.init() before </body>. Also add real '
+        'CSS micro-interactions: button hover states (transform plus shadow plus transition), nav link '
+        'underline-on-hover, card hover lift with a growing shadow, image hover zoom (overflow:hidden on '
+        'the container, scale the img on :hover), and html{scroll-behavior:smooth}.\n\n'
         'COPY: write real, specific, on-topic copy for every heading and paragraph - never placeholder or '
         'lorem ipsum text, never a literal "Company Name" left in.\n\n'
         'If a "REAL BACKGROUND FACTS" section appears below, ground the copy in it (real facts, in your '
@@ -449,6 +465,18 @@ def jarvis_ai_route():
         action = reply_obj.get('action')
         if isinstance(action, dict) and action.get('type') == 'generate' and action.get('prompt'):
             action['image_url'] = pollinations_image_url(action['prompt'])
+    elif app_name == 'site':
+        action = reply_obj.get('action')
+        if isinstance(action, dict) and isinstance(action.get('html'), str):
+            def _resolve_site_image(m):
+                query = m.group(1).strip()
+                url = pexels_search_image(query, PEXELS_API_KEY) if PEXELS_API_KEY else None
+                if not url:
+                    url = pollinations_image_url(query)
+                return f'src="{url}"'
+            action['html'] = re.sub(r'src="QUERY:\s*([^"]*)"', _resolve_site_image, action['html'])
+            action['html'] = re.sub(r"src='QUERY:\s*([^']*)'", _resolve_site_image, action['html'])
+            action['html'] = re.sub(r"url\(['\"]?QUERY:\s*([^'\")]*)['\"]?\)", lambda m: "url(" + chr(39) + _resolve_site_image(m)[5:-1] + chr(39) + ")", action['html'])
 
     threading.Thread(target=extract_and_save_memory, args=(message, GROQ_API_KEY, OPENROUTER_API_KEY), daemon=True).start()
     return jsonify(reply_obj)
