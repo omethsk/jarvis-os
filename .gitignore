@@ -8,3 +8,4 @@ dock_config.json
 assets/current_wallpaper.jpg
 *.bak
 cache/
+generated_sites/
