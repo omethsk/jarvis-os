@@ -993,8 +993,17 @@ fetch(API_BASE+'/api/agents')
    to the cursor, not just the single hovered icon. */
 (function dockMagnify(){
   var dock=document.getElementById('dock');
+  var dockOuter=document.getElementById('dock-outer');
   if(!dock) return;
   var baseSize=50, maxScale=1.55, sigma=54;
+  var positionPinned=false, rafPending=false, lastMouseX=0;
+  function pinPositionOnce(){
+    if(positionPinned || !dockOuter) return;
+    positionPinned=true;
+    var rect=dockOuter.getBoundingClientRect();
+    dockOuter.style.left=rect.left+'px';
+    dockOuter.style.transform='none';
+  }
   function apply(mouseX){
     var items=dock.querySelectorAll('.dock-item');
     items.forEach(function(item){
@@ -1023,7 +1032,14 @@ fetch(API_BASE+'/api/agents')
       }
     });
   }
-  dock.addEventListener('mousemove',function(e){ apply(e.clientX); });
+  dock.addEventListener('mousemove',function(e){
+    pinPositionOnce();
+    lastMouseX=e.clientX;
+    if(!rafPending){
+      rafPending=true;
+      requestAnimationFrame(function(){ apply(lastMouseX); rafPending=false; });
+    }
+  });
   dock.addEventListener('mouseleave',reset);
 })();
 function spotlightAsk(question){
