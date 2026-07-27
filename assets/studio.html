@@ -252,6 +252,7 @@ function generateFromForm(){
   inp.value='';
 }
 
+function speak(t){var text=String(t).slice(0,400);fetch('http://127.0.0.1:5000/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,agent:'friday'})}).then(function(r){if(!r.ok)throw new Error('tts failed');return r.blob();}).then(function(blob){var url=URL.createObjectURL(blob);var audio=new Audio(url);audio.onended=function(){URL.revokeObjectURL(url);};audio.onerror=function(){URL.revokeObjectURL(url);};audio.play().catch(function(){});}).catch(function(){});}
 function toggleJpanel(){var p=document.getElementById('jpanel');p.classList.toggle('open');if(p.classList.contains('open'))setTimeout(function(){document.getElementById('jp-inp').focus();},280);}
 var _hist=[];
 function addMsg(role,text){var b=document.getElementById('jp-msgs');var d=document.createElement('div');d.className='jm '+role;d.innerHTML='<span class="jm-who">'+(role==='u'?'YOU':'FRIDAY')+'</span><div class="jm-bub">'+String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>';b.appendChild(d);b.scrollTop=b.scrollHeight;}
@@ -273,7 +274,7 @@ async function sendMsg(){
     var data=await res.json();
     typ.remove();
     var reply=data.response||'No response.';
-    addMsg('b',reply);_hist.push({role:'assistant',content:reply});
+    addMsg('b',reply);_hist.push({role:'assistant',content:reply});speak(reply);
     if(data.action)execAct(data.action);
   }catch(err){
     typ.remove();
