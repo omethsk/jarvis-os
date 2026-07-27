@@ -59,3 +59,4 @@ Required environment variables (see `server.py` / `jarvis_ai.py` for exact usage
 - Calendar integration does not expand recurring events (RRULE) -- only each event's own first occurrence is considered.
 - There is a real, unresolved performance ceiling: `WebKitWebProcess` runs at roughly 60-90% of one CPU core continuously, confirmed via `strace` to be dominated by GPU-sync (`ioctl`/`futex`) overhead rather than actual page content. This appears to be a WebKitGTK/Mesa-driver/kernel-level issue on Raspberry Pi 5, not fixable via a simple config change -- animations, compositing mode, and GPU-layer hints were all tested and ruled out as the cause.
 - `gpiozero`/`lgpio`/`spidev` are installed in the venv but unused -- no GPIO hardware is currently wired up.
+Still in the works. Can't download the OS for now since it's not complete and has a lot of bugs, but will be available soon.
