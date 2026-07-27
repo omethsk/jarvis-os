@@ -307,10 +307,12 @@ body.has-wallpaper::after{
 .dock-item.running .dock-dot{opacity:1;}
 
 #winpanel{position:fixed;top:7.5vh;left:7.5vw;width:85vw;height:85vh;z-index:800;
-  display:none;flex-direction:column;border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;border-radius:16px;overflow:hidden;
   background:rgba(26,8,3,.96);
-  border:1px solid rgba(var(--accent-rgb),.2);box-shadow:0 24px 80px rgba(0,0,0,.6);}
-#winpanel.open{display:flex;}
+  border:1px solid rgba(var(--accent-rgb),.2);box-shadow:0 24px 80px rgba(0,0,0,.6);
+  opacity:0;transform:scale(.96);pointer-events:none;will-change:transform,opacity;
+  transition:opacity .2s ease,transform .2s cubic-bezier(.34,1.56,.64,1);}
+#winpanel.open{opacity:1;transform:scale(1);pointer-events:auto;}
 #win-titlebar{height:34px;flex-shrink:0;display:flex;align-items:center;padding:0 12px;gap:10px;
   background:rgba(26,8,3,.85);border-bottom:1px solid rgba(var(--accent-rgb),.14);}
 #win-title{font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,205,190,.85);}
