@@ -287,14 +287,15 @@ body.has-wallpaper::after{
 }
 
 .dock-icon{
-  width:50px;height:50px;border-radius:13px;
+  width:50px;height:50px;border-radius:13px;flex-shrink:0;
   background:rgba(80,29,14,.92);
   border:1px solid rgba(var(--accent-rgb),.35);
   display:flex;align-items:center;justify-content:center;font-size:25px;
   color:rgba(255,205,185,.92);
   box-shadow:0 3px 12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
-  transition:border-color .2s,box-shadow .2s,color .2s;
+  transition:border-color .2s,box-shadow .2s,color .2s,width .18s cubic-bezier(.34,1.56,.64,1),height .18s cubic-bezier(.34,1.56,.64,1);
 }
+.dock-icon svg{transition:width .18s cubic-bezier(.34,1.56,.64,1),height .18s cubic-bezier(.34,1.56,.64,1);}
 .dock-icon svg{width:24px;height:24px;flex-shrink:0;}
 .dock-item:hover .dock-icon{border-color:rgba(var(--accent-rgb),.6);box-shadow:0 6px 24px rgba(var(--accent-rgb),.38);color:rgba(255,225,210,.98);}
 .dock-label{
@@ -993,19 +994,34 @@ fetch(API_BASE+'/api/agents')
 (function dockMagnify(){
   var dock=document.getElementById('dock');
   if(!dock) return;
-  var maxScale=1.55, sigma=54;
+  var baseSize=50, maxScale=1.55, sigma=54;
   function apply(mouseX){
     var items=dock.querySelectorAll('.dock-item');
     items.forEach(function(item){
+      var icon=item.querySelector('.dock-icon');
+      if(!icon) return;
       var r=item.getBoundingClientRect();
       var cx=r.left+r.width/2;
       var dist=mouseX-cx;
       var scale=1+(maxScale-1)*Math.exp(-(dist*dist)/(2*sigma*sigma));
-      item.style.transform='scale('+scale.toFixed(3)+') translateY('+(-(scale-1)*22).toFixed(1)+'px)';
+      var size=baseSize*scale;
+      icon.style.width=size+'px';
+      icon.style.height=size+'px';
+      var svg=icon.querySelector('svg');
+      if(svg){ svg.style.width=(size*0.48)+'px'; svg.style.height=(size*0.48)+'px'; }
+      item.style.transform='translateY('+(-(scale-1)*22).toFixed(1)+'px)';
     });
   }
   function reset(){
-    dock.querySelectorAll('.dock-item').forEach(function(item){ item.style.transform=''; });
+    dock.querySelectorAll('.dock-item').forEach(function(item){
+      item.style.transform='';
+      var icon=item.querySelector('.dock-icon');
+      if(icon){
+        icon.style.width=''; icon.style.height='';
+        var svg=icon.querySelector('svg');
+        if(svg){ svg.style.width=''; svg.style.height=''; }
+      }
+    });
   }
   dock.addEventListener('mousemove',function(e){ apply(e.clientX); });
   dock.addEventListener('mouseleave',reset);
