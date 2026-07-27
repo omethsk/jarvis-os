@@ -2,98 +2,105 @@
   'use strict';
 
   var AGENT_FACES = {
+    /* JARVIS reads masculine: a heavy, flat, perfectly symmetric brow ridge
+       (no arch), thin nearly-closed eye slits with a small dim iris, and a
+       neutral-to-flat mouth rather than a curved smile. */
     jarvis: {
       calm: {
-        browL: '58,76 90,78 88,86 58,84',
-        browR: '110,68 142,70 142,78 110,76',
-        eyeL: 'M58 95 Q75 90 92 95',
-        eyeR: 'M108 94 Q125 84 142 94',
-        coreL: {cx: 75, cy: 91, r: 3},
-        coreR: {cx: 125, cy: 88, r: 3.5},
-        mouth: 'M82 133 Q100 141 118 133'
-      },
-      curious: {
-        browL: '58,66 90,68 88,78 58,76',
-        browR: '110,66 142,68 142,78 110,76',
-        eyeL: 'M58 94 Q75 82 92 94',
-        eyeR: 'M108 94 Q125 82 142 94',
-        coreL: {cx: 75, cy: 88, r: 3.5},
-        coreR: {cx: 125, cy: 88, r: 3.5},
-        mouth: 'M82 132 Q100 143 118 132'
-      },
-      stern: {
-        browL: '56,70 92,78 88,88 56,84',
-        browR: '144,70 108,78 112,88 144,84',
-        eyeL: 'M58 95 Q75 92 92 95',
-        eyeR: 'M108 95 Q125 92 142 95',
-        coreL: {cx: 75, cy: 93, r: 2.6},
-        coreR: {cx: 125, cy: 93, r: 2.6},
-        mouth: 'M82 136 Q100 134 118 136'
-      },
-      menacing: {
-        browL: '58,64 94,80 88,90 58,78',
-        browR: '142,64 106,80 112,90 142,78',
-        eyeL: 'M60 95 Q75 93.5 90 95',
-        eyeR: 'M110 95 Q125 93.5 140 95',
-        coreL: {cx: 75, cy: 94, r: 2.2},
-        coreR: {cx: 125, cy: 94, r: 2.2},
-        mouth: 'M82 140 Q100 132 118 140'
-      },
-      concerned: {
-        browL: '60,70 88,74 86,84 60,82',
-        browR: '140,70 112,74 114,84 140,82',
-        eyeL: 'M58 95 Q75 91 92 95',
-        eyeR: 'M108 95 Q125 91 142 95',
-        coreL: {cx: 75, cy: 93, r: 2.8},
-        coreR: {cx: 125, cy: 93, r: 2.8},
-        mouth: 'M84 137 Q100 133 116 137'
-      }
-    },
-    edith: {
-      calm: {
-        browL: '58,80 90,81 89,86 58,85',
-        browR: '110,73 142,74 141,79 110,78',
-        eyeL: 'M58 95 Q75 93 92 95',
-        eyeR: 'M108 95 Q125 93 142 95',
-        coreL: {cx: 75, cy: 94, r: 2.2},
-        coreR: {cx: 125, cy: 94, r: 2.2},
-        mouth: 'M82 134 Q100 135 118 134'
-      },
-      curious: {
-        browL: '58,72 90,73 89,80 58,79',
-        browR: '110,68 142,69 141,76 110,75',
-        eyeL: 'M58 94 Q75 90 92 94',
-        eyeR: 'M108 94 Q125 90 142 94',
-        coreL: {cx: 75, cy: 92, r: 2.4},
-        coreR: {cx: 125, cy: 92, r: 2.4},
-        mouth: 'M82 133 Q100 136 118 133'
-      },
-      stern: {
-        browL: '56,74 92,82 89,90 56,86',
-        browR: '144,74 108,82 111,90 144,86',
-        eyeL: 'M58 96 Q75 94.5 92 96',
-        eyeR: 'M108 96 Q125 94.5 142 96',
+        browL: '56,74 92,74 92,86 56,86',
+        browR: '108,74 144,74 144,86 108,86',
+        eyeL: 'M58 95 L92 95',
+        eyeR: 'M108 95 L142 95',
         coreL: {cx: 75, cy: 95, r: 2},
         coreR: {cx: 125, cy: 95, r: 2},
-        mouth: 'M82 137 Q100 136 118 137'
+        mouth: 'M82 135 Q100 137 118 135'
+      },
+      curious: {
+        browL: '56,62 92,62 92,74 56,74',
+        browR: '108,62 144,62 144,74 108,74',
+        eyeL: 'M58 93 L92 88',
+        eyeR: 'M108 88 L142 93',
+        coreL: {cx: 75, cy: 89, r: 2.4},
+        coreR: {cx: 125, cy: 89, r: 2.4},
+        mouth: 'M82 134 Q100 138 118 134'
+      },
+      stern: {
+        browL: '56,70 92,76 90,88 56,84',
+        browR: '144,70 108,76 110,88 144,84',
+        eyeL: 'M58 96 L92 94',
+        eyeR: 'M108 94 L142 96',
+        coreL: {cx: 75, cy: 95, r: 1.8},
+        coreR: {cx: 125, cy: 95, r: 1.8},
+        mouth: 'M82 138 Q100 135 118 138'
       },
       menacing: {
-        browL: '58,70 94,84 89,92 58,82',
-        browR: '142,70 106,84 111,92 142,82',
-        eyeL: 'M60 96 Q75 95 90 96',
-        eyeR: 'M110 96 Q125 95 140 96',
-        coreL: {cx: 75, cy: 95.5, r: 1.8},
-        coreR: {cx: 125, cy: 95.5, r: 1.8},
-        mouth: 'M82 141 Q100 135 118 141'
+        browL: '58,64 96,80 90,90 58,80',
+        browR: '142,64 104,80 110,90 142,80',
+        eyeL: 'M60 95 L90 96',
+        eyeR: 'M110 96 L140 95',
+        coreL: {cx: 75, cy: 95, r: 1.6},
+        coreR: {cx: 125, cy: 95, r: 1.6},
+        mouth: 'M82 141 Q100 132 118 141'
       },
       concerned: {
-        browL: '60,74 88,77 87,85 60,83',
-        browR: '140,74 112,77 113,85 140,83',
-        eyeL: 'M58 96 Q75 93.5 92 96',
-        eyeR: 'M108 96 Q125 93.5 142 96',
+        browL: '58,68 90,72 88,84 58,82',
+        browR: '142,68 110,72 112,84 142,82',
+        eyeL: 'M58 95 L92 92',
+        eyeR: 'M108 92 L142 95',
+        coreL: {cx: 75, cy: 93, r: 2.1},
+        coreR: {cx: 125, cy: 93, r: 2.1},
+        mouth: 'M84 138 Q100 133 116 138'
+      }
+    },
+    /* EDITH reads feminine: a single clean arched brow line (thin, precise —
+       fitting her "sharp, no-nonsense" persona), larger curved almond eyes
+       with a visible glowing iris, and a soft upturned mouth. Distinct from
+       FRIDAY's warmer, more playful curve via tighter, more angular arcs. */
+    edith: {
+      calm: {
+        browL: '58,74 90,72 89,79 58,81',
+        browR: '110,66 142,64 142,71 110,73',
+        eyeL: 'M56 95 Q75 87 94 95',
+        eyeR: 'M106 94 Q125 83 144 94',
+        coreL: {cx: 75, cy: 90, r: 3.4},
+        coreR: {cx: 125, cy: 87, r: 3.7},
+        mouth: 'M80 133 Q100 140 120 133'
+      },
+      curious: {
+        browL: '58,66 90,64 89,72 58,74',
+        browR: '110,60 142,58 142,66 110,68',
+        eyeL: 'M56 94 Q75 80 94 94',
+        eyeR: 'M106 94 Q125 78 144 94',
+        coreL: {cx: 75, cy: 86, r: 3.7},
+        coreR: {cx: 125, cy: 85, r: 3.8},
+        mouth: 'M80 132 Q100 143 120 132'
+      },
+      stern: {
+        browL: '56,70 92,76 89,86 56,83',
+        browR: '144,70 108,76 111,86 144,83',
+        eyeL: 'M58 96 Q75 92 92 96',
+        eyeR: 'M108 96 Q125 92 142 96',
+        coreL: {cx: 75, cy: 94.5, r: 2.8},
+        coreR: {cx: 125, cy: 94.5, r: 2.8},
+        mouth: 'M82 137 Q100 134 118 137'
+      },
+      menacing: {
+        browL: '58,66 94,82 89,90 58,80',
+        browR: '142,66 106,82 111,90 142,80',
+        eyeL: 'M60 96 Q75 93.5 90 96',
+        eyeR: 'M110 96 Q125 93.5 140 96',
         coreL: {cx: 75, cy: 95, r: 2.4},
         coreR: {cx: 125, cy: 95, r: 2.4},
-        mouth: 'M84 138 Q100 136 116 138'
+        mouth: 'M82 140 Q100 133 118 140'
+      },
+      concerned: {
+        browL: '60,70 88,74 87,83 60,81',
+        browR: '140,70 112,74 113,83 140,81',
+        eyeL: 'M58 96 Q75 90.5 92 96',
+        eyeR: 'M108 96 Q125 90.5 142 96',
+        coreL: {cx: 75, cy: 93.5, r: 3},
+        coreR: {cx: 125, cy: 93.5, r: 3},
+        mouth: 'M84 137 Q100 132 116 137'
       }
     },
     friday: {
