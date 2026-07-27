@@ -9,8 +9,8 @@
       calm: {
         browL: '56,74 92,74 92,86 56,86',
         browR: '108,74 144,74 144,86 108,86',
-        eyeL: 'M58 95 L92 95',
-        eyeR: 'M108 95 L142 95',
+        eyeL: 'M58 95 Q75 94 92 95',
+        eyeR: 'M108 95 Q125 94 142 95',
         coreL: {cx: 75, cy: 95, r: 2},
         coreR: {cx: 125, cy: 95, r: 2},
         mouth: 'M82 135 Q100 137 118 135'
@@ -18,8 +18,8 @@
       curious: {
         browL: '56,62 92,62 92,74 56,74',
         browR: '108,62 144,62 144,74 108,74',
-        eyeL: 'M58 93 L92 88',
-        eyeR: 'M108 88 L142 93',
+        eyeL: 'M58 93 Q75 89 92 88',
+        eyeR: 'M108 88 Q125 89 142 93',
         coreL: {cx: 75, cy: 89, r: 2.4},
         coreR: {cx: 125, cy: 89, r: 2.4},
         mouth: 'M82 134 Q100 138 118 134'
@@ -27,8 +27,8 @@
       stern: {
         browL: '56,70 92,76 90,88 56,84',
         browR: '144,70 108,76 110,88 144,84',
-        eyeL: 'M58 96 L92 94',
-        eyeR: 'M108 94 L142 96',
+        eyeL: 'M58 96 Q75 94.5 92 94',
+        eyeR: 'M108 94 Q125 94.5 142 96',
         coreL: {cx: 75, cy: 95, r: 1.8},
         coreR: {cx: 125, cy: 95, r: 1.8},
         mouth: 'M82 138 Q100 135 118 138'
@@ -36,8 +36,8 @@
       menacing: {
         browL: '58,64 96,80 90,90 58,80',
         browR: '142,64 104,80 110,90 142,80',
-        eyeL: 'M60 95 L90 96',
-        eyeR: 'M110 96 L140 95',
+        eyeL: 'M60 95 Q75 95 90 96',
+        eyeR: 'M110 96 Q125 95 140 95',
         coreL: {cx: 75, cy: 95, r: 1.6},
         coreR: {cx: 125, cy: 95, r: 1.6},
         mouth: 'M82 141 Q100 132 118 141'
@@ -45,8 +45,8 @@
       concerned: {
         browL: '58,68 90,72 88,84 58,82',
         browR: '142,68 110,72 112,84 142,82',
-        eyeL: 'M58 95 L92 92',
-        eyeR: 'M108 92 L142 95',
+        eyeL: 'M58 95 Q75 93 92 92',
+        eyeR: 'M108 92 Q125 93 142 95',
         coreL: {cx: 75, cy: 93, r: 2.1},
         coreR: {cx: 125, cy: 93, r: 2.1},
         mouth: 'M84 138 Q100 133 116 138'
@@ -170,6 +170,16 @@
     }
   };
 
+  /* Eye stroke thickness is the single biggest legibility lever at real
+     kiosk viewing distance: a hairline slit for JARVIS vs. a bold curved
+     band for EDITH/FRIDAY reads instantly, where subtle path-curve
+     differences alone did not. */
+  var AGENT_EYE_WIDTH = {
+    jarvis: {l: 3, r: 3},
+    edith: {l: 11, r: 12},
+    friday: {l: 10, r: 11}
+  };
+
   var DEFAULT_EMOTION = 'calm';
   var MORPH_MS = 350;
   var idCounter = 0;
@@ -273,18 +283,19 @@
   function buildSvg(agent){
     var d = AGENT_FACES[agent][DEFAULT_EMOTION];
     var c = AGENT_COLORS[agent];
+    var w = AGENT_EYE_WIDTH[agent] || {l: 6, r: 7};
     return (
       '<svg class="jarvis-face" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" data-state="idle" data-agent="' + agent + '">' +
       buildFrames(agent) +
       '<polygon class="jf-browL" points="' + d.browL + '" fill="' + c.browFill + '" stroke="' + c.browStrokeL + '" stroke-width="1"/>' +
       '<polygon class="jf-browR" points="' + d.browR + '" fill="' + c.browFill + '" stroke="' + c.browStrokeR + '" stroke-width="1"/>' +
       '<g class="jf-eyeL">' +
-        '<path class="jf-eyeL-path" d="' + d.eyeL + '" fill="none" stroke="' + c.eyeStrokeL + '" stroke-width="6" stroke-linecap="round"/>' +
+        '<path class="jf-eyeL-path" d="' + d.eyeL + '" fill="none" stroke="' + c.eyeStrokeL + '" stroke-width="' + w.l + '" stroke-linecap="round"/>' +
         '<circle class="jf-coreL-halo" cx="' + d.coreL.cx + '" cy="' + d.coreL.cy + '" r="' + (d.coreL.r * 2.4) + '" fill="' + c.haloFill + '"/>' +
         '<circle class="jf-coreL" cx="' + d.coreL.cx + '" cy="' + d.coreL.cy + '" r="' + d.coreL.r + '" fill="rgba(255,224,205,.95)"/>' +
       '</g>' +
       '<g class="jf-eyeR">' +
-        '<path class="jf-eyeR-path" d="' + d.eyeR + '" fill="none" stroke="' + c.eyeStrokeR + '" stroke-width="7" stroke-linecap="round"/>' +
+        '<path class="jf-eyeR-path" d="' + d.eyeR + '" fill="none" stroke="' + c.eyeStrokeR + '" stroke-width="' + w.r + '" stroke-linecap="round"/>' +
         '<circle class="jf-coreR-halo" cx="' + d.coreR.cx + '" cy="' + d.coreR.cy + '" r="' + (d.coreR.r * 2.4) + '" fill="' + c.haloFill + '"/>' +
         '<circle class="jf-coreR" cx="' + d.coreR.cx + '" cy="' + d.coreR.cy + '" r="' + d.coreR.r + '" fill="rgba(255,224,205,.95)"/>' +
       '</g>' +
@@ -382,7 +393,11 @@
     var toShape = AGENT_FACES[target][DEFAULT_EMOTION];
     var fromColor = AGENT_COLORS[this.agent];
     var toColor = AGENT_COLORS[target];
+    var fromWidth = AGENT_EYE_WIDTH[this.agent] || {l: 6, r: 7};
+    var toWidth = AGENT_EYE_WIDTH[target] || {l: 6, r: 7};
     var tasks = [
+      {el: this.eyeLPath, attr: 'stroke-width', from: fromWidth.l, to: toWidth.l},
+      {el: this.eyeRPath, attr: 'stroke-width', from: fromWidth.r, to: toWidth.r},
       {el: this.browL, attr: 'points', from: fromShape.browL, to: toShape.browL, shape: true},
       {el: this.browR, attr: 'points', from: fromShape.browR, to: toShape.browR, shape: true},
       {el: this.eyeLPath, attr: 'd', from: fromShape.eyeL, to: toShape.eyeL, shape: true},

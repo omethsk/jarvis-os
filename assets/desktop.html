@@ -80,20 +80,23 @@ body.has-wallpaper::after{
   55%{opacity:.32;}
   100%{opacity:0;}
 }
-/* Idle breathing: face pulses gently, satellite orbits slow down. Reversed
-   instantly (via idlePresence's class toggle) on any input. */
+/* Idle breathing: face pulses gently. Satellites dim rather than change
+   orbit SPEED — changing animation-duration on an already-running infinite
+   CSS animation preserves elapsed *time*, not rotation *angle*, so WebKit
+   visibly snaps the satellites to a new position instead of smoothly
+   speeding up/down. Opacity is safe: it transitions continuously with no
+   phase discontinuity, so idle<->active reads as a soft fade, not a jump. */
 @keyframes jf-idle-breathe{
   0%,100%{transform:translate(-50%,-50%) scale(1);}
   50%{transform:translate(-50%,-50%) scale(1.035);}
 }
 body.jarvis-idle #face-mount-bg{animation:jf-idle-breathe 4.2s ease-in-out infinite;}
-body.jarvis-idle .sat-orbit-a{animation-duration:34s;}
-body.jarvis-idle .sat-orbit-b{animation-duration:42s;}
-/* Speaking: orbit quickens and the core ring brightens while audio plays. */
-body.jarvis-speaking .sat-orbit-a{animation-duration:9s;}
-body.jarvis-speaking .sat-orbit-b{animation-duration:11s;}
+.sat-orbit{position:absolute;left:50%;top:50%;width:0;height:0;will-change:transform,opacity;
+  opacity:1;transition:opacity 1.4s ease;}
+body.jarvis-idle .sat-orbit{opacity:.5;}
+/* Speaking: core ring brightens while audio plays (filter transition, no
+   duration swap, so no snap). */
 body.jarvis-speaking .ring-fast{filter:brightness(1.5);transition:filter .3s ease;}
-.sat-orbit{position:absolute;left:50%;top:50%;width:0;height:0;will-change:transform;}
 .sat-orbit-a{animation:sat-spin 20s linear infinite;}
 .sat-orbit-b{animation:sat-spin-rev 25s linear infinite;}
 @keyframes sat-spin{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}
@@ -1067,8 +1070,15 @@ fetch(API_BASE+'/api/agents')
   var timer=null, idleSince=0;
   function goIdle(){ document.body.classList.add('jarvis-idle'); idleSince=Date.now(); }
   function reset(){
-    if(document.body.classList.contains('jarvis-idle') && idleSince && (Date.now()-idleSince)>60000){
-      ambientContextSpeak(WELCOME_BACK_LINES,120000);
+    if(document.body.classList.contains('jarvis-idle')){
+      /* Regaining focus: a quick glance-up, driven by the face's own
+         smooth emotion tween (not a CSS animation-duration swap), so
+         waking from idle reads as an expression change, not a snap. */
+      if(jarvisFaceHandle){
+        jarvisFaceHandle.setEmotion('curious');
+        setTimeout(function(){ jarvisFaceHandle.setEmotion('calm'); },450);
+      }
+      if(idleSince && (Date.now()-idleSince)>60000) ambientContextSpeak(WELCOME_BACK_LINES,120000);
     }
     document.body.classList.remove('jarvis-idle');
     clearTimeout(timer);
