@@ -272,7 +272,7 @@ body.has-wallpaper::after{
 /* ═══ DOCK ══════════════════════════════════════════════════════════ */
 #dock-outer{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:300;}
 #dock{
-  display:flex;align-items:flex-end;gap:16px;
+  display:flex;align-items:flex-end;gap:20px;
   background:rgba(62,22,10,.88);
   border:1px solid rgba(var(--accent-rgb),.38);
   border-radius:22px;padding:8px 14px 6px;
@@ -994,7 +994,7 @@ fetch(API_BASE+'/api/agents')
   var dock=document.getElementById('dock');
   var dockOuter=document.getElementById('dock-outer');
   if(!dock) return;
-  var maxScale=1.3, sigma=48;
+  var maxScale=1.2, sigma=30;
   var positionPinned=false, rafPending=false, lastMouseX=0;
   function pinPositionOnce(){
     if(positionPinned || !dockOuter) return;
