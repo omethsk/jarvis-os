@@ -969,6 +969,7 @@ fetch(API_BASE+'/api/agents')
     var others=['edith','jarvis','friday'].filter(function(id){ return id!==currentAgent; });
     assignSatellite('satA', others[0], true);
     assignSatellite('satB', others[1], true);
+    if(jarvisSettings().emotionReactions!==false) setTimeout(bootGreeting, 1800);
   })
   .catch(function(){
     document.getElementById('mb-appname').textContent='EDITH';
@@ -1065,16 +1066,11 @@ var AMBIENT_LINES={
   friday:['Ready when you are.','Got something in mind?','Let\'s make something.']
 };
 var lastAmbientSpeak=0;
-function ambientSpeak(){
-  var now=Date.now();
-  if(now-lastAmbientSpeak<90000) return;
-  var lines=AMBIENT_LINES[currentAgent]||AMBIENT_LINES.jarvis;
-  var line=lines[Math.floor(Math.random()*lines.length)];
-  lastAmbientSpeak=now;
+function speakLine(text, agent){
   fetch(API_BASE+'/tts',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({text:line,agent:currentAgent})
+    body:JSON.stringify({text:text,agent:agent})
   }).then(function(r){
     if(!r.ok) throw new Error('tts failed');
     return r.blob();
@@ -1086,6 +1082,23 @@ function ambientSpeak(){
     audio.onerror=function(){ jarvisFaceHandle.setState('idle'); URL.revokeObjectURL(url); };
     audio.play().catch(function(){ jarvisFaceHandle.setState('idle'); });
   }).catch(function(){});
+}
+function ambientSpeak(){
+  var now=Date.now();
+  if(now-lastAmbientSpeak<90000) return;
+  var lines=AMBIENT_LINES[currentAgent]||AMBIENT_LINES.jarvis;
+  var line=lines[Math.floor(Math.random()*lines.length)];
+  lastAmbientSpeak=now;
+  speakLine(line, currentAgent);
+}
+function bootGreeting(){
+  var h=new Date().getHours();
+  var lines;
+  if(h>=5&&h<12) lines=['Good morning, sir. All systems online.','Good morning, sir. Everything is ready for you.'];
+  else if(h>=12&&h<17) lines=['Good afternoon, sir. Systems are ready.','Good afternoon, sir. All systems online.'];
+  else if(h>=17&&h<22) lines=['Good evening, sir. Everything is online and ready.','Good evening, sir. Systems ready.'];
+  else lines=['Systems online, sir. Working late?','Still up, sir? Everything is ready for you.'];
+  speakLine(lines[Math.floor(Math.random()*lines.length)], currentAgent);
 }
 
 /* ── Weather ── */
