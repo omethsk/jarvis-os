@@ -949,6 +949,7 @@ function assignSatellite(slot, agentId, instant){
 function clickSatellite(slot){
   var clickedAgentId=slotAgents[slot];
   if(!clickedAgentId || clickedAgentId===currentAgent) return;
+  SFX.swap();
   var oldCenterAgentId=currentAgent;
   setAgent(clickedAgentId);
   assignSatellite(slot, oldCenterAgentId);
@@ -1427,7 +1428,46 @@ function spotlightLaunch(name){
 }
 var currentWinApp=null;
 
+var SFX=(function(){
+  var ctx=null;
+  function getCtx(){
+    if(!ctx){ try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+    return ctx;
+  }
+  function sweep(f0,f1,dur,peak){
+    var c=getCtx(); if(!c) return;
+    var t0=c.currentTime;
+    var osc=c.createOscillator(), gain=c.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(f0,t0);
+    osc.frequency.exponentialRampToValueAtTime(f1,t0+dur*0.7);
+    gain.gain.setValueAtTime(0,t0);
+    gain.gain.linearRampToValueAtTime(peak,t0+0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t0); osc.stop(t0+dur+0.02);
+  }
+  return {
+    click:function(){
+      var c=getCtx(); if(!c) return;
+      var t0=c.currentTime;
+      [[880,0.09,0.07,0],[1320,0.07,0.04,0.02]].forEach(function(p){
+        var osc=c.createOscillator(), gain=c.createGain();
+        osc.type='sine'; osc.frequency.setValueAtTime(p[0],t0+p[3]);
+        gain.gain.setValueAtTime(0,t0+p[3]);
+        gain.gain.linearRampToValueAtTime(p[2],t0+p[3]+0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001,t0+p[3]+p[1]);
+        osc.connect(gain).connect(c.destination);
+        osc.start(t0+p[3]); osc.stop(t0+p[3]+p[1]+0.02);
+      });
+    },
+    open:function(){ sweep(420,1100,0.2,0.06); },
+    close:function(){ sweep(1000,340,0.18,0.055); },
+    swap:function(){ sweep(600,1400,0.28,0.05); }
+  };
+})();
 function launchApp(name,question){
+  SFX.click();
   document.getElementById('launchpad').classList.remove('open');
   var appMeta=ALL_APPS.filter(function(a){return a.name===name;})[0];
   if(appMeta&&appMeta.agent) setAgent(appMeta.agent);
@@ -1452,9 +1492,11 @@ function launchApp(name,question){
   setDockRunning(name,true);
 }
 function minimizeWindow(){
+  SFX.close();
   document.getElementById('winpanel').classList.remove('open');
 }
 function closeWindow(){
+  SFX.close();
   setAgent('edith');
   document.getElementById('winpanel').classList.remove('open');
   document.getElementById('win-frame').src='';
